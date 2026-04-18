@@ -146,7 +146,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 <script>
 const GMKEY = 'AIzaSyDZy05M7zUb-M4bIbKUi7KOM1BnRwyx8_M';
 const SENHA = 'dna2025';
-const IGREJA = { nome:'Terra Fértil', end:'Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ', lat:-22.9443, lng:-43.6100 };
+const IGREJA = { nome:'Terra Fértil', end:'Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070', lat:-22.8877, lng:-43.6019 };
 
 // Firebase config
 const FB = {
@@ -280,7 +280,8 @@ function geocodeAddress(address) {
   const key = address.toLowerCase().trim();
   if (geocodeCache[key]) return Promise.resolve(geocodeCache[key]);
   return new Promise(resolve => {
-    geocoder.geocode({ address: address + ', Rio de Janeiro, Brasil', region: 'BR' }, (results, status) => {
+    const fullAddr = address.toLowerCase().includes('rio de janeiro') ? address : address + ', Rio de Janeiro, RJ, Brasil';
+    geocoder.geocode({ address: fullAddr, region: 'BR', componentRestrictions: { country: 'BR' } }, (results, status) => {
       if (status === 'OK' && results[0]) {
         const loc = results[0].geometry.location;
         const coords = { lat: loc.lat(), lng: loc.lng() };
@@ -295,8 +296,8 @@ function geocodeAddress(address) {
 
 /* PLOT ALL */
 async function plotAll() {
-  // Geocode Igreja first
-  const icoords = await geocodeAddress(IGREJA.end);
+  // Geocode Igreja com CEP exato para precisão
+  const icoords = await geocodeAddress('Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070');
   if (icoords) { geocodeCache['igreja'] = icoords; IGREJA.lat = icoords.lat; IGREJA.lng = icoords.lng; }
 
   // CASAS
