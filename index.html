@@ -217,6 +217,27 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 @keyframes fade-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
+/* ADMIN TRIGGER — long press 3s no canto */
+#admin-trigger{
+  position:absolute;bottom:calc(var(--sab) + 12px);right:calc(var(--sar) + 12px);
+  width:36px;height:36px;cursor:pointer;z-index:10;
+  -webkit-user-select:none;user-select:none;
+}
+#admin-trigger::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:rgba(255,255,255,0);
+  transform:scale(0);transform-origin:center;
+  transition:background .1s;
+}
+#admin-trigger.pressing::after{
+  animation:press-ring 3s linear forwards;
+}
+@keyframes press-ring{
+  0%{transform:scale(0);background:rgba(139,23,23,0);outline:1px solid rgba(217,58,58,0)}
+  10%{background:rgba(139,23,23,.15);outline:1px solid rgba(217,58,58,.3)}
+  100%{transform:scale(1);background:rgba(139,23,23,.25);outline:1px solid rgba(217,58,58,.6)}
+}
+
 /* small screens */
 @media(max-height:640px){
   #s-s3,#s-s4{padding-top:48px}
@@ -239,6 +260,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="welcome-sub">Terra Fértil</div>
   <button class="btn-primary" onclick="goScene(1)">Iniciar DNA Experience</button>
   <div class="team-badge">DNA Team · Recepção e Acolhimento</div>
+  <div id="admin-trigger" title=""></div>
 </div>
 
 <!-- SCENE 1 -->
@@ -607,6 +629,27 @@ window.novoVisitante=function(){
   window.setToggle(true);
   setTimeout(()=>document.getElementById('f-nome').focus(),150);
 };
+
+/* ── ADMIN LONG PRESS ── */
+(function(){
+  const el = document.getElementById('admin-trigger');
+  let timer = null;
+  function start(e){
+    e.preventDefault();
+    el.classList.add('pressing');
+    timer = setTimeout(()=>{ window.location.href='admin.html'; }, 3000);
+  }
+  function cancel(){
+    clearTimeout(timer);
+    el.classList.remove('pressing');
+  }
+  el.addEventListener('mousedown', start);
+  el.addEventListener('touchstart', start, {passive:false});
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchcancel', cancel);
+})();
 
 /* ── KEYBOARD & SWIPE ── */
 document.addEventListener('keydown',e=>{
