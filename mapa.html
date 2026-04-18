@@ -10,14 +10,11 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080808;--card:#111;--red:#8B1717;--rb:#D93A3A;
-  --border:rgba(255,255,255,.08);--w:#fff;
-  --dim:rgba(255,255,255,.55);--dimmer:rgba(255,255,255,.28);
+  --bg:#080808;--red:#8B1717;--rb:#D93A3A;
+  --border:rgba(255,255,255,.08);--w:#fff;--dim:rgba(255,255,255,.55);--dimmer:rgba(255,255,255,.28);
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
 }
 html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
-
-/* GATE */
 #gate{position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 42%,#1a0505 0%,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9999;padding:24px}
 #gate.hidden{display:none}
 .gate-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,14vw,88px);letter-spacing:.15em;color:var(--w);position:relative}
@@ -29,101 +26,66 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 .gate-btn{background:var(--red);color:var(--w);border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:15px 40px;cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .2s;min-height:50px}
 .gate-btn:hover{background:#a01e1e}
 .gate-err{color:rgba(255,120,120,.9);font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;min-height:18px}
-
-/* APP */
 #app{display:none;height:100%;flex-direction:column}
 #app.visible{display:flex}
-
-/* HEADER */
-.header{background:rgba(8,8,8,.97);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0;padding-top:calc(var(--sat) + 12px);z-index:1000}
-.header-left{display:flex;align-items:center;gap:10px}
-.header-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.12em;color:var(--w)}
-.header-title{font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;color:var(--dim)}
+.header{background:rgba(8,8,8,.97);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;flex-shrink:0;padding-top:calc(var(--sat) + 11px);z-index:1000}
+.header-left{display:flex;align-items:center;gap:8px}
+.header-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--w)}
+.header-title{font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;color:var(--dim)}
 .header-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.btn-sm{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;cursor:pointer;transition:all .2s;border-radius:2px;min-height:34px;-webkit-appearance:none}
+.btn-sm{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 11px;cursor:pointer;transition:all .2s;border-radius:2px;min-height:32px;-webkit-appearance:none;text-decoration:none;display:inline-flex;align-items:center}
 .btn-sm:hover{background:rgba(255,255,255,.1);color:var(--w)}
 .btn-sm.active-filter{background:rgba(139,23,23,.3);border-color:var(--rb);color:var(--w)}
-.btn-back{background:none;border:1px solid var(--border);color:var(--dimmer);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;cursor:pointer;border-radius:2px;min-height:34px;text-decoration:none;display:flex;align-items:center;gap:5px}
-.btn-back:hover{color:var(--w);border-color:rgba(255,255,255,.2)}
-
-/* LEGEND */
-.legend{background:rgba(8,8,8,.97);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap}
-.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim)}
-.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend{background:rgba(8,8,8,.97);border-bottom:1px solid var(--border);padding:7px 16px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim)}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.leg-dot.igreja{background:#FFD700;border:2px solid #fff}
 .leg-dot.casa{background:#D93A3A;border:2px solid #fff}
-.leg-dot.visitante{background:#ffffff;border:2px solid #888}
-.leg-count{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.05em;color:var(--w);margin-left:2px}
-
-/* MAP */
-#map{flex:1;width:100%;z-index:1}
-
-/* LOADING OVERLAY */
-#map-loading{position:absolute;inset:0;background:rgba(8,8,8,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:12px;pointer-events:none;opacity:0;transition:opacity .3s}
+.leg-dot.visitante{background:#fff;border:2px solid #888}
+.leg-count{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.05em;color:var(--w);margin-left:1px}
+#map{flex:1;width:100%}
+#map-loading{position:absolute;inset:0;background:rgba(8,8,8,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:10px;pointer-events:none;opacity:0;transition:opacity .3s}
 #map-loading.show{opacity:1;pointer-events:all}
-.loading-spinner{width:32px;height:32px;border:2px solid rgba(217,58,58,.3);border-top-color:var(--rb);border-radius:50%;animation:spin .8s linear infinite}
+.loading-spinner{width:30px;height:30px;border:2px solid rgba(217,58,58,.3);border-top-color:var(--rb);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim)}
-
-/* SIDEBAR / PANEL */
-#panel{position:absolute;right:0;top:0;bottom:0;width:min(320px,85vw);background:rgba(10,10,10,.97);border-left:1px solid var(--border);z-index:400;transform:translateX(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.loading-text{font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;color:var(--dim)}
+#panel{position:absolute;right:0;top:0;bottom:0;width:min(310px,88vw);background:rgba(10,10,10,.97);border-left:1px solid var(--border);z-index:400;transform:translateX(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);overflow-y:auto;-webkit-overflow-scrolling:touch}
 #panel.open{transform:translateX(0)}
-.panel-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:0;background:rgba(10,10,10,.98);z-index:1}
-.panel-close{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px;-webkit-appearance:none}
+.panel-header{padding:14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:0;background:rgba(10,10,10,.98);z-index:1}
+.panel-close{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:19px;line-height:1;padding:2px 5px}
 .panel-close:hover{color:var(--w)}
-.panel-type{font-size:9px;letter-spacing:.35em;text-transform:uppercase;margin-bottom:5px}
+.panel-type{font-size:9px;letter-spacing:.35em;text-transform:uppercase;margin-bottom:4px}
+.panel-type.igreja{color:#FFD700}
 .panel-type.casa{color:var(--rb)}
 .panel-type.visitante{color:rgba(255,255,255,.5)}
-.panel-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--w);line-height:1}
-.panel-body{padding:16px}
-.panel-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
-.panel-icon{width:14px;height:14px;stroke:var(--dimmer);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px}
-.panel-text{font-family:'Inter',sans-serif;font-size:13px;color:var(--dim);line-height:1.5}
-.panel-tag{display:inline-block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+.panel-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:var(--w);line-height:1}
+.panel-body{padding:14px}
+.panel-row{display:flex;align-items:flex-start;gap:7px;margin-bottom:9px}
+.panel-icon{width:13px;height:13px;stroke:var(--dimmer);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px}
+.panel-text{font-family:'Inter',sans-serif;font-size:12px;color:var(--dim);line-height:1.5}
+.panel-tag{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:10px}
 .panel-tag.primeira{background:rgba(217,58,58,.15);color:var(--rb);border:1px solid rgba(217,58,58,.25)}
 .panel-tag.retorno{background:rgba(76,175,80,.1);color:#4caf50;border:1px solid rgba(76,175,80,.2)}
-.panel-divider{border:none;border-top:1px solid var(--border);margin:14px 0}
-.casas-prox-title{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--rb);margin-bottom:8px}
-.casa-prox-item{background:rgba(139,23,23,.1);border:1px solid rgba(139,23,23,.2);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:background .2s}
+.panel-divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+.casas-prox-title{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--rb);margin-bottom:7px}
+.casa-prox-item{background:rgba(139,23,23,.1);border:1px solid rgba(139,23,23,.2);padding:9px 11px;margin-bottom:5px;cursor:pointer;transition:background .2s}
 .casa-prox-item:hover{background:rgba(139,23,23,.2)}
-.casa-prox-nome{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--w);margin-bottom:2px}
-.casa-prox-info{font-size:12px;color:var(--dim)}
-.casa-prox-dist{font-size:11px;color:var(--rb);font-weight:500;margin-top:3px}
-.wa-panel-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.2);color:#25d366;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:12px;text-decoration:none;transition:background .2s;margin-top:4px;cursor:pointer}
-.wa-panel-btn:hover{background:rgba(37,211,102,.15)}
-.wa-panel-btn svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
-.geocoding-note{font-size:11px;color:var(--dimmer);font-style:italic;text-align:center;padding:8px 0}
-
-/* TOAST */
-#toast{position:fixed;bottom:calc(var(--sab) + 20px);left:50%;transform:translateX(-50%) translateY(80px);background:rgba(18,4,4,.97);border:1px solid rgba(217,58,58,.35);border-left:3px solid var(--rb);color:var(--w);font-family:'Crimson Pro',serif;font-size:15px;font-style:italic;padding:12px 20px;max-width:min(320px,88vw);text-align:center;z-index:9000;transition:transform .4s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.casa-prox-nome{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--w);margin-bottom:2px}
+.casa-prox-info{font-size:11px;color:var(--dim)}
+.casa-prox-dist{font-size:10px;color:var(--rb);font-weight:500;margin-top:2px}
+.panel-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;border:1px solid;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:11px;text-decoration:none;transition:background .2s;margin-top:4px;cursor:pointer;-webkit-appearance:none}
+.panel-btn.wa{background:rgba(37,211,102,.08);border-color:rgba(37,211,102,.2);color:#25d366}
+.panel-btn.wa:hover{background:rgba(37,211,102,.16)}
+.panel-btn.gmap{background:rgba(66,133,244,.08);border-color:rgba(66,133,244,.2);color:#4285f4}
+.panel-btn.gmap:hover{background:rgba(66,133,244,.16)}
+.panel-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.visitantes-count{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--rb);margin-top:4px}
+#toast{position:fixed;bottom:calc(var(--sab) + 20px);left:50%;transform:translateX(-50%) translateY(80px);background:rgba(18,4,4,.97);border:1px solid rgba(217,58,58,.35);border-left:3px solid var(--rb);color:var(--w);font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;padding:11px 18px;max-width:min(300px,88vw);text-align:center;z-index:9000;transition:transform .4s cubic-bezier(.16,1,.3,1);pointer-events:none}
 #toast.show{transform:translateX(-50%) translateY(0)}
-
-/* LEAFLET CUSTOM MARKERS */
-.marker-casa{
-  width:28px;height:28px;
-  background:var(--rb);border:2px solid #fff;
-  border-radius:50% 50% 50% 0;
-  transform:rotate(-45deg);
-  box-shadow:0 2px 8px rgba(0,0,0,.5);
-}
-.marker-casa-inner{
-  width:100%;height:100%;
-  display:flex;align-items:center;justify-content:center;
-  transform:rotate(45deg);
-  font-size:12px;color:#fff;font-weight:700;font-family:'Bebas Neue',sans-serif;
-}
-.marker-visitante{
-  width:22px;height:22px;
-  background:#fff;border:2px solid #666;
-  border-radius:50%;
-  box-shadow:0 2px 6px rgba(0,0,0,.4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:#333;font-weight:700;font-family:'Bebas Neue',sans-serif;
-}
 </style>
 </head>
 <body>
 
-<!-- GATE -->
 <div id="gate">
   <div class="gate-logo">DNA</div>
   <div class="gate-sub">Mapa · Terra Fértil</div>
@@ -133,7 +95,6 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
   <button class="gate-btn" onclick="checkPassword()">Entrar</button>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="header">
     <div class="header-left">
@@ -144,44 +105,26 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
       <button class="btn-sm" id="btn-casas" onclick="toggleFilter('casas')">🏠 Casas</button>
       <button class="btn-sm" id="btn-visitantes" onclick="toggleFilter('visitantes')">👤 Visitantes</button>
       <button class="btn-sm" onclick="centerMap()">⌖ Centralizar</button>
-      <a href="admin.html" class="btn-back">← Admin</a>
+      <a href="admin.html" class="btn-sm">← Admin</a>
     </div>
   </div>
-
   <div class="legend">
-    <div class="leg-item">
-      <div class="leg-dot casa"></div>
-      <span>Casas Sacerdotais</span>
-      <span class="leg-count" id="leg-casas">0</span>
-    </div>
-    <div class="leg-item">
-      <div class="leg-dot visitante"></div>
-      <span>Visitantes</span>
-      <span class="leg-count" id="leg-visitantes">0</span>
-    </div>
+    <div class="leg-item"><div class="leg-dot igreja"></div><span>Terra Fértil</span></div>
+    <div class="leg-item"><div class="leg-dot casa"></div><span>Casas</span><span class="leg-count" id="leg-casas">0</span></div>
+    <div class="leg-item"><div class="leg-dot visitante"></div><span>Visitantes</span><span class="leg-count" id="leg-visitantes">0</span></div>
   </div>
-
   <div style="position:relative;flex:1;display:flex;flex-direction:column">
     <div id="map"></div>
-    <div id="map-loading">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Localizando endereços...</div>
-    </div>
+    <div id="map-loading"><div class="loading-spinner"></div><div class="loading-text" id="loading-text">Localizando endereços...</div></div>
   </div>
-
-  <!-- SIDE PANEL -->
   <div id="panel">
     <div class="panel-header">
-      <div>
-        <div class="panel-type" id="panel-type">Casa Sacerdotal</div>
-        <div class="panel-name" id="panel-name">Nome</div>
-      </div>
+      <div><div class="panel-type" id="panel-type">Casa</div><div class="panel-name" id="panel-name">—</div></div>
       <button class="panel-close" onclick="closePanel()">×</button>
     </div>
     <div class="panel-body" id="panel-body"></div>
   </div>
 </div>
-
 <div id="toast"></div>
 
 <script type="module">
@@ -197,299 +140,239 @@ const db = getFirestore(initializeApp({
   appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"
 }));
 
-const SENHA = 'dna2025';
-let map, casasLayer, visitantesLayer;
-let allCasas = [], allVisitantes = [];
-let showCasas = true, showVisitantes = true;
-let geocodeCache = {};
+const SENHA='dna2025';
+let map,casasLayer,visitantesLayer,igrejaLayer;
+let allCasas=[],allVisitantes=[],geocodeCache={};
+let showCasas=true,showVisitantes=true;
+
+// Igreja coords (Rua Augusto de Castro 4, Inhoaíba, Rio de Janeiro)
+const IGREJA={nome:'Terra Fértil',endereco:'Rua Augusto de Castro, 4 — Inhoaíba, Rio de Janeiro',lat:-22.9443,lng:-43.6100};
 
 /* GATE */
-window.checkPassword = function() {
-  const val = document.getElementById('gate-input').value;
-  if (val === SENHA) {
-    document.getElementById('gate').classList.add('hidden');
-    document.getElementById('app').classList.add('visible');
-    initMap();
-    loadData();
-  } else {
-    document.getElementById('gate-err').textContent = 'Senha incorreta.';
-    document.getElementById('gate-input').value = '';
-    document.getElementById('gate-input').focus();
-  }
+window.checkPassword=function(){
+  const val=document.getElementById('gate-input').value;
+  if(val===SENHA){sessionStorage.setItem('dna_auth','1');openApp();}
+  else{document.getElementById('gate-err').textContent='Senha incorreta.';document.getElementById('gate-input').value='';document.getElementById('gate-input').focus();}
 };
+function openApp(){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  initMap();loadData();
+}
+if(sessionStorage.getItem('dna_auth')==='1')openApp();
 
-/* MAP INIT */
-function initMap() {
-  map = L.map('map', {
-    center: [-22.9068, -43.1729], // Rio de Janeiro
-    zoom: 11,
-    zoomControl: true,
-    attributionControl: false
-  });
-
-  // Dark tile layer
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19,
-    subdomains: 'abcd'
-  }).addTo(map);
-
-  // Attribution small
+/* MAP */
+function initMap(){
+  map=L.map('map',{center:[IGREJA.lat,IGREJA.lng],zoom:12,zoomControl:true,attributionControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
   L.control.attribution({position:'bottomleft'}).addTo(map);
   map.attributionControl.setPrefix('© OpenStreetMap · CartoDB');
-
-  casasLayer    = L.layerGroup().addTo(map);
-  visitantesLayer = L.layerGroup().addTo(map);
+  casasLayer=L.layerGroup().addTo(map);
+  visitantesLayer=L.layerGroup().addTo(map);
+  igrejaLayer=L.layerGroup().addTo(map);
+  plotIgreja();
 }
 
-/* GEOCODING via Nominatim (free, no key needed) */
-async function geocode(address) {
-  if (!address) return null;
-  const key = address.toLowerCase().trim();
-  if (geocodeCache[key]) return geocodeCache[key];
+/* IGREJA PIN */
+function plotIgreja(){
+  const icon=L.divIcon({
+    className:'',
+    html:`<div style="position:relative;width:36px;height:36px">
+      <div style="width:36px;height:36px;background:#FFD700;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 0 16px rgba(255,215,0,.5)"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform:rotate(0deg);font-size:16px">⛪</div>
+    </div>`,
+    iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-38]
+  });
+  const marker=L.marker([IGREJA.lat,IGREJA.lng],{icon,zIndexOffset:2000});
+  marker.on('click',()=>openIgrejaPanel());
+  igrejaLayer.addLayer(marker);
+  // Pulse circle
+  L.circle([IGREJA.lat,IGREJA.lng],{radius:150,color:'#FFD700',fillColor:'#FFD700',fillOpacity:.08,weight:2,dashArray:'6 4'}).addTo(igrejaLayer);
+}
 
-  // Add "Rio de Janeiro" context if not present to improve accuracy
-  const query = address.toLowerCase().includes('rio') ? address : address + ', Rio de Janeiro, Brasil';
-
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=br`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'pt-BR', 'User-Agent': 'DNA-TerraFertil/1.0' } });
-    const data = await res.json();
-    if (data && data[0]) {
-      const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-      geocodeCache[key] = coords;
-      return coords;
-    }
-  } catch(e) { console.warn('Geocode error:', e); }
+/* GEOCODE */
+async function geocode(address){
+  if(!address)return null;
+  const key=address.toLowerCase().trim();
+  if(geocodeCache[key])return geocodeCache[key];
+  const q=address.toLowerCase().includes('rio')?address:address+', Rio de Janeiro, Brasil';
+  try{
+    const url=`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`;
+    const res=await fetch(url,{headers:{'Accept-Language':'pt-BR','User-Agent':'DNA-TerraFertil/1.0'}});
+    const data=await res.json();
+    if(data&&data[0]){const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};geocodeCache[key]=c;return c;}
+  }catch(e){console.warn(e);}
   return null;
 }
 
-/* LOAD DATA */
-async function loadData() {
-  setLoading(true);
-  try {
-    const [casasSnap, visitSnap] = await Promise.all([
-      getDocs(query(collection(db,'casas'), orderBy('timestamp','asc'))),
-      getDocs(query(collection(db,'visitantes'), orderBy('timestamp','desc')))
+/* LOAD */
+async function loadData(){
+  setLoading(true,'Carregando dados...');
+  try{
+    const [cs,vs]=await Promise.all([
+      getDocs(query(collection(db,'casas'),orderBy('timestamp','asc'))),
+      getDocs(query(collection(db,'visitantes'),orderBy('timestamp','desc')))
     ]);
-    allCasas = casasSnap.docs.map(d=>({id:d.id,...d.data()}));
-    allVisitantes = visitSnap.docs.map(d=>({id:d.id,...d.data()}));
+    allCasas=cs.docs.map(d=>({id:d.id,...d.data()}));
+    allVisitantes=vs.docs.map(d=>({id:d.id,...d.data()}));
     await plotAll();
-  } catch(e) {
-    showToast('Erro ao carregar dados. Verifique a conexão.');
-    console.error(e);
-  }
+  }catch(e){showToast('Erro ao carregar dados.');console.error(e);}
   setLoading(false);
 }
 
-async function plotAll() {
-  casasLayer.clearLayers();
-  visitantesLayer.clearLayers();
-  const bounds = [];
+async function plotAll(){
+  casasLayer.clearLayers();visitantesLayer.clearLayers();
+  const bounds=[[IGREJA.lat,IGREJA.lng]];
 
-  // --- CASAS ---
-  let casasOk = 0;
-  for (const casa of allCasas) {
-    const coords = await geocode(casa.endereco);
-    if (!coords) continue;
-    casasOk++;
-    bounds.push([coords.lat, coords.lng]);
+  // CASAS
+  setLoading(true,'Localizando casas...');
+  let cOk=0;
+  for(const casa of allCasas){
+    const c=await geocode(casa.endereco);
+    if(!c)continue;cOk++;bounds.push([c.lat,c.lng]);
+    geocodeCache[(casa.endereco||'').toLowerCase().trim()]=c;
 
-    const icon = L.divIcon({
-      className: '',
-      html: `<div class="marker-casa"><div class="marker-casa-inner">🏠</div></div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
-      popupAnchor: [0, -30]
-    });
-
-    const marker = L.marker([coords.lat, coords.lng], { icon, zIndexOffset: 1000 });
-    marker.on('click', () => openCasaPanel(casa, coords));
+    const icon=L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:#D93A3A;border:2.5px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);font-size:12px">🏠</span></div>`,iconSize:[28,28],iconAnchor:[14,28]});
+    const marker=L.marker([c.lat,c.lng],{icon,zIndexOffset:1000});
+    marker.on('click',()=>openCasaPanel(casa,c));
     casasLayer.addLayer(marker);
-    // Small delay to avoid rate limiting
+
+    // Raio 2km ao redor da casa
+    L.circle([c.lat,c.lng],{radius:2000,color:'#D93A3A',fillColor:'#D93A3A',fillOpacity:.06,weight:1,dashArray:'5 5'}).addTo(casasLayer);
     await delay(300);
   }
-  document.getElementById('leg-casas').textContent = casasOk;
+  document.getElementById('leg-casas').textContent=cOk;
 
-  // --- VISITANTES (only those with endereco) ---
-  const visitComEnd = allVisitantes.filter(v => v.endereco);
-  let visitOk = 0;
-  for (const v of visitComEnd) {
-    const coords = await geocode(v.endereco);
-    if (!coords) continue;
-    visitOk++;
-    bounds.push([coords.lat, coords.lng]);
+  // VISITANTES
+  setLoading(true,'Localizando visitantes...');
+  const visitComEnd=allVisitantes.filter(v=>v.endereco);
+  let vOk=0;
+  for(const v of visitComEnd){
+    const c=await geocode(v.endereco);
+    if(!c)continue;vOk++;bounds.push([c.lat,c.lng]);
+    geocodeCache[(v.endereco||'').toLowerCase().trim()]=c;
 
-    const ini = initials(v.nome);
-    const icon = L.divIcon({
-      className: '',
-      html: `<div class="marker-visitante">${ini}</div>`,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
-    });
-
-    const marker = L.marker([coords.lat, coords.lng], { icon });
-    marker.on('click', () => openVisitantePanel(v, coords));
+    const ini=initials(v.nome);
+    const icon=L.divIcon({className:'',html:`<div style="width:22px;height:22px;background:#fff;border:2px solid #666;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#333;font-family:'Bebas Neue',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.4)">${ini}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+    const marker=L.marker([c.lat,c.lng],{icon});
+    marker.on('click',()=>openVisitantePanel(v,c));
     visitantesLayer.addLayer(marker);
     await delay(300);
   }
-  document.getElementById('leg-visitantes').textContent = visitOk;
+  document.getElementById('leg-visitantes').textContent=vOk;
 
-  // Fit map
-  if (bounds.length > 0) {
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
-  }
-
-  if (visitComEnd.length > 0 && visitOk === 0) {
-    showToast('Alguns endereços não foram localizados. Verifique se estão completos.');
-  }
+  if(bounds.length>1)map.fitBounds(bounds,{padding:[40,40],maxZoom:13});
+  setLoading(false);
 }
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 
 /* PANELS */
-function openCasaPanel(casa, coords) {
-  document.getElementById('panel-type').textContent = 'Casa Sacerdotal';
-  document.getElementById('panel-type').className = 'panel-type casa';
-  document.getElementById('panel-name').textContent = casa.nome || '—';
-
-  const casasProx = getNearestCasas(coords, casa.id, 3);
-
-  document.getElementById('panel-body').innerHTML = `
-    <div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <div class="panel-text"><strong>Líder:</strong> ${casa.lider || '—'}</div>
-    </div>
-    ${casa.endereco ? `<div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <div class="panel-text">${casa.endereco}</div>
-    </div>` : ''}
-    ${casa.horario ? `<div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <div class="panel-text">${casa.horario}</div>
-    </div>` : ''}
-    <hr class="panel-divider">
-    <div class="casas-prox-title">Visitantes nas redondezas</div>
-    <div class="geocoding-note">Visitantes com endereços próximos aparecem no mapa.</div>
-  `;
+function openIgrejaPanel(){
+  document.getElementById('panel-type').textContent='Igreja';
+  document.getElementById('panel-type').className='panel-type igreja';
+  document.getElementById('panel-name').textContent='Terra Fértil';
+  const gmUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(IGREJA.endereco)}`;
+  document.getElementById('panel-body').innerHTML=`
+    <div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="panel-text">${IGREJA.endereco}</div></div>
+    <div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="panel-text">Terça-feira às 20h · Domingo às 19h</div></div>
+    <a class="panel-btn gmap" href="${gmUrl}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Ver no Google Maps</a>`;
   openPanel();
 }
 
-function openVisitantePanel(v, coords) {
-  document.getElementById('panel-type').textContent = v.primeiraVez ? '1ª Visita' : 'Retorno';
-  document.getElementById('panel-type').className = `panel-type visitante`;
-  document.getElementById('panel-name').textContent = v.nome || '—';
+function openCasaPanel(casa,coords){
+  document.getElementById('panel-type').textContent='Casa Sacerdotal';
+  document.getElementById('panel-type').className='panel-type casa';
+  document.getElementById('panel-name').textContent=casa.nome||'—';
+  const count=countVisitantesPorCasa(casa);
+  const gmUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((casa.endereco||'')+', Rio de Janeiro')}`;
+  document.getElementById('panel-body').innerHTML=`
+    <div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="panel-text"><strong>Líder:</strong> ${casa.lider||'—'}</div></div>
+    ${casa.endereco?`<div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="panel-text">${casa.endereco}</div></div>`:''}
+    ${casa.horario?`<div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="panel-text">${casa.horario}</div></div>`:''}
+    ${count>0?`<div class="visitantes-count">${count} visitante${count!==1?'s':''} sugerido${count!==1?'s':''} nesta área</div>`:''}
+    <a class="panel-btn gmap" href="${gmUrl}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Ver no Google Maps</a>`;
+  openPanel();
+}
 
-  const casasProx = getNearestCasas(coords, null, 3);
-  const hasCel = v.celular && v.celular.length > 0;
+function openVisitantePanel(v,coords){
+  document.getElementById('panel-type').textContent=v.primeiraVez?'1ª Visita':'Retorno';
+  document.getElementById('panel-type').className='panel-type visitante';
+  document.getElementById('panel-name').textContent=v.nome||'—';
+  const casasProx=getNearestCasas(coords,null,3);
+  const hasCel=v.celular&&v.celular.length>0;
+  const digits=(v.celular||'').replace(/\D/g,'');
+  const waMsg=`Oi ${(v.nome||'').split(' ')[0]}, tudo bem?\n\nQue alegria ter você com a gente na Terra Fértil! A gente ficou muito feliz com sua presença.\n\nEsperamos te ver de novo em breve!\n\nCom carinho, família Terra Fértil`;
+  const gmUrl=v.endereco?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.endereco+', Rio de Janeiro')}`:'#';
+  const waIcon=`<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
+  const gmapIcon=`<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
 
-  const waIcon = `<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
+  const casasHTML=casasProx.length?`<hr class="panel-divider"><div class="casas-prox-title">Casas mais próximas</div>${casasProx.map(c=>`<div class="casa-prox-item" onclick="flyTo(${c.lat},${c.lng})"><div class="casa-prox-nome">${c.nome}</div><div class="casa-prox-info">Líder: ${c.lider||'—'}${c.horario?' · '+c.horario:''}</div><div class="casa-prox-dist">${c.distKm} km de distância</div></div>`).join('')}`:'';
 
-  const casasHTML = casasProx.length ? `
-    <hr class="panel-divider">
-    <div class="casas-prox-title">Casas Sacerdotais mais próximas</div>
-    ${casasProx.map(c => `
-      <div class="casa-prox-item" onclick="flyToCasa('${c.lat}','${c.lng}','${(c.nome||'').replace(/'/g,"\\'")}')">
-        <div class="casa-prox-nome">${c.nome}</div>
-        <div class="casa-prox-info">Líder: ${c.lider || '—'}${c.horario ? ' · '+c.horario : ''}</div>
-        <div class="casa-prox-dist">${c.distKm} km de distância</div>
-      </div>`).join('')}` : '';
-
-  const msg = `Oi ${(v.nome||'').split(' ')[0]}, tudo bem?\n\nQue alegria ter você com a gente na Terra Fértil! A gente ficou muito feliz com sua presença.\n\nEsperamos te ver de novo em breve!\n\nCom carinho, família Terra Fértil`;
-
-  document.getElementById('panel-body').innerHTML = `
+  document.getElementById('panel-body').innerHTML=`
     <span class="panel-tag ${v.primeiraVez?'primeira':'retorno'}">${v.primeiraVez?'Primeira visita':'Retorno'}</span>
-    ${v.celular ? `<div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.24 16.92z"/></svg>
-      <div class="panel-text">${v.celular}</div>
-    </div>` : ''}
-    ${v.endereco ? `<div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <div class="panel-text">${v.endereco}</div>
-    </div>` : ''}
-    ${v.culto ? `<div class="panel-row">
-      <svg class="panel-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <div class="panel-text">${v.culto}${v.horario?' às '+v.horario:''}</div>
-    </div>` : ''}
-    ${hasCel ? `<a class="wa-panel-btn" href="https://wa.me/55${v.celular.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">${waIcon} Enviar mensagem</a>` : ''}
-    ${casasHTML}
-  `;
+    ${v.celular?`<div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.24 16.92z"/></svg><div class="panel-text">${v.celular}</div></div>`:''}
+    ${v.endereco?`<div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="panel-text">${v.endereco}</div></div>`:''}
+    ${v.culto?`<div class="panel-row"><svg class="panel-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="panel-text">${v.culto}${v.horario?' às '+v.horario:''}</div></div>`:''}
+    ${hasCel?`<a class="panel-btn wa" href="https://wa.me/55${digits}?text=${encodeURIComponent(waMsg)}" target="_blank" rel="noopener">${waIcon} Enviar mensagem</a>`:''}
+    ${v.endereco?`<a class="panel-btn gmap" href="${gmUrl}" target="_blank" rel="noopener">${gmapIcon} Ver no Google Maps</a>`:''}
+    ${casasHTML}`;
   openPanel();
 }
 
-function openPanel() { document.getElementById('panel').classList.add('open'); }
-window.closePanel = function() { document.getElementById('panel').classList.remove('open'); };
+function openPanel(){document.getElementById('panel').classList.add('open');}
+window.closePanel=function(){document.getElementById('panel').classList.remove('open');};
+window.flyTo=function(lat,lng){map.flyTo([lat,lng],15,{duration:1.2});window.closePanel();};
 
-/* NEAREST CASAS with real geocoded coords */
-function getNearestCasas(fromCoords, excludeId, limit) {
-  const results = [];
-  for (const casa of allCasas) {
-    if (casa.id === excludeId) continue;
-    const key = (casa.endereco||'').toLowerCase().trim();
-    const coords = geocodeCache[key];
-    if (!coords) continue;
-    const dist = haversine(fromCoords.lat, fromCoords.lng, coords.lat, coords.lng);
-    results.push({ ...casa, distKm: dist.toFixed(1), lat: coords.lat, lng: coords.lng });
+/* NEAREST CASAS */
+function getNearestCasas(fromCoords,excludeId,limit){
+  const results=[];
+  for(const casa of allCasas){
+    if(casa.id===excludeId)continue;
+    const key=(casa.endereco||'').toLowerCase().trim();
+    const c=geocodeCache[key];
+    if(!c)continue;
+    const dist=haversine(fromCoords.lat,fromCoords.lng,c.lat,c.lng);
+    results.push({...casa,distKm:dist.toFixed(1),lat:c.lat,lng:c.lng});
   }
-  return results.sort((a,b) => parseFloat(a.distKm)-parseFloat(b.distKm)).slice(0,limit);
+  return results.sort((a,b)=>parseFloat(a.distKm)-parseFloat(b.distKm)).slice(0,limit);
 }
 
-window.flyToCasa = function(lat, lng, nome) {
-  map.flyTo([parseFloat(lat), parseFloat(lng)], 15, { duration: 1.2 });
-  window.closePanel();
-};
+function countVisitantesPorCasa(casa){
+  const kc=(casa.endereco||'').toLowerCase().trim();
+  const cc=geocodeCache[kc];
+  if(!cc)return 0;
+  return allVisitantes.filter(v=>{
+    const kv=(v.endereco||'').toLowerCase().trim();
+    const cv=geocodeCache[kv];
+    if(!cv)return false;
+    return haversine(cc.lat,cc.lng,cv.lat,cv.lng)<2;
+  }).length;
+}
 
-/* HAVERSINE distance in km */
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2-lat1)*Math.PI/180;
-  const dLon = (lon2-lon1)*Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 /* FILTERS */
-window.toggleFilter = function(type) {
-  if (type === 'casas') {
-    showCasas = !showCasas;
-    if (showCasas) map.addLayer(casasLayer); else map.removeLayer(casasLayer);
-    document.getElementById('btn-casas').classList.toggle('active-filter', !showCasas);
-  } else {
-    showVisitantes = !showVisitantes;
-    if (showVisitantes) map.addLayer(visitantesLayer); else map.removeLayer(visitantesLayer);
-    document.getElementById('btn-visitantes').classList.toggle('active-filter', !showVisitantes);
-  }
+window.toggleFilter=function(type){
+  if(type==='casas'){showCasas=!showCasas;if(showCasas)map.addLayer(casasLayer);else map.removeLayer(casasLayer);document.getElementById('btn-casas').classList.toggle('active-filter',!showCasas);}
+  else{showVisitantes=!showVisitantes;if(showVisitantes)map.addLayer(visitantesLayer);else map.removeLayer(visitantesLayer);document.getElementById('btn-visitantes').classList.toggle('active-filter',!showVisitantes);}
 };
-
-window.centerMap = function() {
-  const all = [];
-  casasLayer.eachLayer(l => all.push(l.getLatLng()));
-  visitantesLayer.eachLayer(l => all.push(l.getLatLng()));
-  if (all.length) map.fitBounds(all.map(c=>[c.lat,c.lng]), { padding:[40,40], maxZoom:14 });
+window.centerMap=function(){
+  const all=[[IGREJA.lat,IGREJA.lng]];
+  casasLayer.eachLayer(l=>all.push([l.getLatLng().lat,l.getLatLng().lng]));
+  visitantesLayer.eachLayer(l=>all.push([l.getLatLng().lat,l.getLatLng().lng]));
+  if(all.length)map.fitBounds(all,{padding:[40,40],maxZoom:13});
 };
 
 /* UTILS */
-function initials(nome) {
-  const parts = (nome||'').trim().split(' ').filter(Boolean);
-  if (parts.length >= 2) return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
-  return (parts[0]||'?').slice(0,2).toUpperCase();
-}
-function setLoading(show) { document.getElementById('map-loading').classList.toggle('show', show); }
+function initials(n){const p=(n||'').trim().split(' ').filter(Boolean);return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():(p[0]||'?').slice(0,2).toUpperCase();}
+function setLoading(show,txt){const el=document.getElementById('map-loading');el.classList.toggle('show',show);if(txt)document.getElementById('loading-text').textContent=txt;}
 let toastTimer;
-function showToast(msg) {
-  clearTimeout(toastTimer);
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
-}
-
-// Close panel on map click
-window.addEventListener('load', ()=>{
-  document.getElementById('map').addEventListener('click', e=>{
-    if (!e.target.closest('#panel') && !e.target.closest('.marker-casa') && !e.target.closest('.marker-visitante')) {
-      window.closePanel();
-    }
-  });
-});
+function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),4000);}
 </script>
 </body>
 </html>
