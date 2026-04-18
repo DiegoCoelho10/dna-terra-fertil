@@ -146,7 +146,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 <script>
 const GMKEY = 'AIzaSyDZy05M7zUb-M4bIbKUi7KOM1BnRwyx8_M';
 const SENHA = 'dna2025';
-const IGREJA = { nome:'Terra Fértil', end:'Ministério Apostólico Terra Fértil, Rua Augusto de Castro 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070, Brasil', lat:-22.8877, lng:-43.6019 };
+const IGREJA = { nome:'Terra Fértil', end:'Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ', lat:-22.8820, lng:-43.6080 };
 
 // Firebase config
 const FB = {
@@ -224,6 +224,8 @@ window.initMap = async function() {
     fullscreenControl: false
   });
   geocoder = new google.maps.Geocoder();
+  // Igreja usa coordenadas fixas precisas — não geocodifica para evitar erro
+  gmap.setCenter({lat:IGREJA.lat, lng:IGREJA.lng});
   plotIgreja();
   await plotAll();
   hideOverlay();
@@ -295,10 +297,7 @@ function geocodeAddress(address) {
 }
 
 /* PLOT ALL */
-async function plotAll() {
-  // Geocode Igreja com CEP exato para precisão
-  const icoords = await geocodeAddress('Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070');
-  if (icoords) { geocodeCache['igreja'] = icoords; IGREJA.lat = icoords.lat; IGREJA.lng = icoords.lng; }
+async function plotAll(skipIgreja) {
 
   // CASAS
   setTxt('Localizando casas sacerdotais...');
