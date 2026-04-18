@@ -146,7 +146,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 <script>
 const GMKEY = 'AIzaSyDZy05M7zUb-M4bIbKUi7KOM1BnRwyx8_M';
 const SENHA = 'dna2025';
-const IGREJA = { nome:'Terra Fértil', end:'Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070', lat:-22.8877, lng:-43.6019 };
+const IGREJA = { nome:'Terra Fértil', end:'Ministério Apostólico Terra Fértil, Rua Augusto de Castro 4, Inhoaíba, Rio de Janeiro, RJ, 23062-070, Brasil', lat:-22.8877, lng:-43.6019 };
 
 // Firebase config
 const FB = {
@@ -329,13 +329,13 @@ async function plotAll() {
 
     // Raio 2km
     const circle = new google.maps.Circle({
-      map: gmap, center: c, radius: 2000,
-      strokeColor: '#D93A3A', strokeOpacity: 0.5, strokeWeight: 1,
-      fillColor: '#D93A3A', fillOpacity: 0.05,
+      map: gmap, center: c, radius: 1500,
+      strokeColor: '#D93A3A', strokeOpacity: 0.35, strokeWeight: 1,
+      fillColor: '#D93A3A', fillOpacity: 0.04,
       strokeDasharray: [5,5]
     });
     casaCircles.push(circle);
-    await delay(100);
+    await delay(80);
   }
   document.getElementById('lc').textContent = cOk;
 
@@ -364,7 +364,7 @@ async function plotAll() {
     });
     marker.addListener('click', () => openVisitantePanel(v, c));
     visitMarkers.push(marker);
-    await delay(80);
+    await delay(50);
   }
   document.getElementById('lv').textContent = vOk;
 
@@ -430,6 +430,7 @@ function openVisitantePanel(v, coords) {
 
 function openPanel() { document.getElementById('panel').classList.add('open'); }
 window.closePanel = () => document.getElementById('panel').classList.remove('open');
+  google.maps.event.addListener(gmap, 'click', () => window.closePanel());
 window.flyTo = (lat, lng) => { gmap.panTo({lat,lng}); gmap.setZoom(15); closePanel(); };
 
 /* NEAREST */
@@ -493,22 +494,28 @@ function darkMapStyle() {
   return [
     {elementType:'geometry',stylers:[{color:'#1a1a2e'}]},
     {elementType:'labels.text.stroke',stylers:[{color:'#1a1a2e'}]},
-    {elementType:'labels.text.fill',stylers:[{color:'#746855'}]},
-    {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#d59563'}]},
-    {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#d59563'}]},
-    {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#263c3f'}]},
-    {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#6b9a76'}]},
-    {featureType:'road',elementType:'geometry',stylers:[{color:'#38414e'}]},
-    {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#212a37'}]},
-    {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#9ca5b3'}]},
-    {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#746855'}]},
-    {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#1f2835'}]},
-    {featureType:'road.highway',elementType:'labels.text.fill',stylers:[{color:'#f3d19c'}]},
-    {featureType:'transit',elementType:'geometry',stylers:[{color:'#2f3948'}]},
-    {featureType:'transit.station',elementType:'labels.text.fill',stylers:[{color:'#d59563'}]},
-    {featureType:'water',elementType:'geometry',stylers:[{color:'#17263c'}]},
-    {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#515c6d'}]},
-    {featureType:'water',elementType:'labels.text.stroke',stylers:[{color:'#17263c'}]}
+    {elementType:'labels.text.fill',stylers:[{color:'#555566'}]},
+    {featureType:'poi',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.business',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.attraction',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.government',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.medical',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.park',elementType:'labels',stylers:[{visibility:'off'}]},
+    {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1e2a1e'}]},
+    {featureType:'poi.school',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'poi.sports_complex',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'transit',elementType:'all',stylers:[{visibility:'off'}]},
+    {featureType:'road',elementType:'geometry',stylers:[{color:'#2d3447'}]},
+    {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#1a1f30'}]},
+    {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#7a8099'}]},
+    {featureType:'road',elementType:'labels.icon',stylers:[{visibility:'off'}]},
+    {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#3d4a6b'}]},
+    {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#1a1f30'}]},
+    {featureType:'road.highway',elementType:'labels.text.fill',stylers:[{color:'#9aa0b8'}]},
+    {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#c8a96e'}]},
+    {featureType:'administrative.neighborhood',elementType:'labels.text.fill',stylers:[{color:'#7a6a4a'}]},
+    {featureType:'water',elementType:'geometry',stylers:[{color:'#0f1a2e'}]},
+    {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#3a5070'}]}
   ];
 }
 </script>
