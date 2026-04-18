@@ -6,17 +6,17 @@
 <title>Admin · DNA Terra Fértil</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080808;--card:#111111;--card2:#161616;
+  --bg:#080808;--card:#111111;
   --red:#8B1717;--rb:#D93A3A;--border:rgba(255,255,255,.08);
   --w:#fff;--dim:rgba(255,255,255,.55);--dimmer:rgba(255,255,255,.3);
-  --green:#2e7d32;--green-l:#4caf50;
+  --green-l:#4caf50;
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
 }
 html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
 
-/* ── PASSWORD GATE ── */
+/* GATE */
 #gate{position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 42%,#1a0505 0%,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9999;padding:24px}
 #gate.hidden{display:none}
 .gate-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,15vw,96px);letter-spacing:.15em;color:var(--w);position:relative}
@@ -24,86 +24,143 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .gate-sub{font-family:'Crimson Pro',serif;font-style:italic;font-size:16px;color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-top:-8px}
 .gate-label{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--dimmer);margin-top:8px}
 .gate-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-bottom-color:rgba(255,255,255,.3);color:var(--w);font-family:'Inter',sans-serif;font-size:18px;padding:14px 20px;outline:none;width:min(280px,90vw);text-align:center;letter-spacing:.15em;border-radius:0;-webkit-appearance:none;transition:border-color .2s}
-.gate-input:focus{border-bottom-color:var(--rb);background:rgba(139,23,23,.06)}
+.gate-input:focus{border-bottom-color:var(--rb)}
 .gate-btn{background:var(--red);color:var(--w);border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:16px 40px;cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .2s;margin-top:4px;min-height:52px}
 .gate-btn:hover{background:#a01e1e}
 .gate-err{color:rgba(255,120,120,.9);font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;min-height:20px}
 
-/* ── APP ── */
+/* APP */
 #app{display:none;min-height:100vh;padding-bottom:calc(var(--sab) + 20px)}
 #app.visible{display:block}
 
 /* HEADER */
-.header{background:rgba(8,8,8,.95);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.header-left{display:flex;align-items:baseline;gap:12px}
-.header-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.12em;color:var(--w)}
-.header-title{font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim)}
-.header-right{display:flex;align-items:center;gap:10px}
-.btn-refresh{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all .2s;border-radius:2px}
-.btn-refresh:hover{background:rgba(255,255,255,.1);color:var(--w)}
-.btn-logout{background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;padding:8px}
+.header{background:rgba(8,8,8,.95);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.12em;color:var(--w)}
+.fb-dot{width:7px;height:7px;border-radius:50%;background:#f44336;flex-shrink:0}
+.fb-dot.ok{background:#4caf50}
+.header-right{display:flex;align-items:center;gap:8px}
+.btn-sm{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all .2s;border-radius:2px;min-height:36px}
+.btn-sm:hover{background:rgba(255,255,255,.1);color:var(--w)}
+.btn-logout{background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;padding:8px;min-height:36px}
 .btn-logout:hover{color:var(--w)}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:rgba(8,8,8,.8);position:sticky;top:53px;z-index:99}
+.tab{flex:1;padding:13px 8px;text-align:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;-webkit-appearance:none;background:none;border-top:none;border-left:none;border-right:none;min-height:44px}
+.tab.active{color:var(--w);border-bottom-color:var(--rb)}
+.tab:hover{color:var(--dim)}
 
 /* STATS */
 .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
-.stat{background:var(--bg);padding:16px 20px;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,40px);letter-spacing:.05em;color:var(--w);line-height:1}
-.stat-label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer);margin-top:4px}
+.stat{background:var(--bg);padding:14px 16px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,6vw,38px);letter-spacing:.05em;color:var(--w);line-height:1}
+.stat-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer);margin-top:4px}
 .stat-val.red{color:var(--rb)}
 .stat-val.green{color:var(--green-l)}
 
 /* FILTERS */
-.filters{padding:16px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.filters{padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
 .filter-label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer)}
-.filter-input{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--w);font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;outline:none;border-radius:2px;-webkit-appearance:none;min-height:36px}
+.filter-input{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--w);font-family:'Inter',sans-serif;font-size:14px;padding:7px 12px;outline:none;border-radius:2px;-webkit-appearance:none;min-height:36px}
 .filter-input:focus{border-color:rgba(217,58,58,.4)}
-.filter-clear{background:none;border:1px solid var(--border);color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:8px 12px;cursor:pointer;border-radius:2px;transition:all .2s}
-.filter-clear:hover{border-color:var(--rb);color:var(--w)}
-.filter-tag{display:flex;gap:6px}
-.ftag{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-size:11px;padding:6px 12px;cursor:pointer;border-radius:2px;transition:all .2s;-webkit-appearance:none}
+.filter-tag{display:flex;gap:6px;flex-wrap:wrap}
+.ftag{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-size:11px;padding:6px 12px;cursor:pointer;border-radius:2px;transition:all .2s;-webkit-appearance:none;min-height:34px}
 .ftag.active{background:rgba(139,23,23,.3);border-color:var(--rb);color:var(--w)}
+.filter-clear{background:none;border:1px solid var(--border);color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;cursor:pointer;border-radius:2px;transition:all .2s;min-height:34px}
+.filter-clear:hover{border-color:var(--rb);color:var(--w)}
 
 /* CONTENT */
 .content{padding:20px;max-width:900px;margin:0 auto}
-.day-group{margin-bottom:28px}
-.day-header{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.08em;color:var(--dim);padding:8px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;align-items:baseline;gap:12px}
+.day-group{margin-bottom:24px}
+.day-header{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;color:var(--dim);padding:8px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;display:flex;align-items:baseline;gap:10px}
 .day-count{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;background:rgba(139,23,23,.25);color:var(--rb);padding:3px 10px;border-radius:20px;letter-spacing:.05em}
 
 /* VISITOR CARD */
-.visitor-card{background:var(--card);border:1px solid var(--border);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.visitor-card{background:var(--card);border:1px solid var(--border);margin-bottom:10px;overflow:hidden;transition:border-color .2s,opacity .2s;position:relative;user-select:none;-webkit-user-select:none}
 .visitor-card:hover{border-color:rgba(139,23,23,.35)}
+.visitor-card.pressing{border-color:rgba(217,58,58,.5);opacity:.85}
+.press-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--rb);width:0;transition:none}
 .card-top{display:flex;align-items:flex-start;gap:14px;padding:16px}
-.avatar{width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;color:var(--w);flex-shrink:0}
+.avatar{width:42px;height:42px;min-width:42px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;color:var(--w);flex-shrink:0}
 .card-info{flex:1;min-width:0}
 .card-name{font-family:'Inter',sans-serif;font-size:clamp(15px,3.8vw,17px);font-weight:600;color:var(--w);margin-bottom:4px;word-break:break-word}
 .card-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
 .card-icon{width:13px;height:13px;stroke:var(--dimmer);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .card-text{font-family:'Inter',sans-serif;font-size:13px;color:var(--dim)}
-.card-text.cel{font-family:'Inter',sans-serif;letter-spacing:.04em}
-.card-meta{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
-.tag{font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:500}
+.card-meta{margin-top:6px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:500}
 .tag.primeira{background:rgba(217,58,58,.15);color:var(--rb);border:1px solid rgba(217,58,58,.25)}
 .tag.retorno{background:rgba(76,175,80,.1);color:var(--green-l);border:1px solid rgba(76,175,80,.2)}
 .tag.hora{background:rgba(255,255,255,.05);color:var(--dimmer);border:1px solid var(--border)}
 
-/* WHATSAPP BUTTONS */
-.card-actions{border-top:1px solid var(--border);display:flex;gap:0}
-.wa-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;transition:background .2s;text-decoration:none;color:var(--dim)}
-.wa-btn:first-child{border-right:1px solid var(--border)}
+/* CASAS SUGERIDAS no card */
+.casas-sugeridas{padding:8px 16px 12px;border-top:1px solid var(--border);display:none}
+.casas-sugeridas.show{display:block}
+.casas-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--rb);margin-bottom:8px}
+.casa-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(139,23,23,.1);border:1px solid rgba(139,23,23,.25);padding:5px 10px;border-radius:20px;margin:3px 4px 3px 0;font-size:12px;color:var(--dim)}
+.casa-pill strong{color:var(--w);font-weight:600}
+
+/* WA BUTTONS */
+.card-actions{border-top:1px solid var(--border);display:flex}
+.wa-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 8px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;transition:background .2s;text-decoration:none;color:var(--dim)}
+.wa-btn:not(:last-child){border-right:1px solid var(--border)}
 .wa-btn:hover{background:rgba(255,255,255,.05);color:var(--w)}
-.wa-btn .wa-icon{width:16px;height:16px;fill:currentColor;flex-shrink:0}
-.wa-btn.msg1:hover{background:rgba(37,211,102,.07);color:#25d366}
-.wa-btn.msg2:hover{background:rgba(37,211,102,.07);color:#25d366}
+.wa-btn .wa-icon{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+.wa-btn.msg1:hover,.wa-btn.msg2:hover{background:rgba(37,211,102,.07);color:#25d366}
 .wa-btn.no-cel{opacity:.3;cursor:not-allowed;pointer-events:none}
 
 /* EMPTY / LOADING */
 .empty-state{text-align:center;padding:60px 20px}
-.empty-icon{font-size:48px;margin-bottom:16px;opacity:.3}
-.empty-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:var(--dim);margin-bottom:8px}
-.empty-text{font-family:'Crimson Pro',serif;font-style:italic;font-size:16px;color:var(--dimmer)}
-.loading-bar{height:2px;background:var(--border);position:relative;overflow:hidden;margin:0}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3}
+.empty-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--dim);margin-bottom:8px}
+.empty-text{font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dimmer)}
+.loading-bar{height:2px;background:var(--border);position:relative;overflow:hidden}
 .loading-bar::after{content:'';position:absolute;inset:0;background:var(--rb);animation:load-slide 1.2s ease-in-out infinite;transform-origin:left}
-@keyframes load-slide{0%{transform:scaleX(0) translateX(0)}50%{transform:scaleX(.7) translateX(30%)}100%{transform:scaleX(0) translateX(200%)}}</style>
+@keyframes load-slide{0%{transform:scaleX(0)}50%{transform:scaleX(.7) translateX(40%)}100%{transform:scaleX(0) translateX(300%)}}}
+
+/* CASAS SACERDOTAIS TAB */
+#tab-casas{display:none;padding:20px;max-width:900px;margin:0 auto}
+#tab-casas.active{display:block}
+
+.casas-form{background:var(--card);border:1px solid var(--border);padding:20px;margin-bottom:24px}
+.casas-form-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.08em;color:var(--w);margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.c-label{display:block;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer);margin-bottom:7px}
+.c-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-bottom-color:rgba(255,255,255,.22);color:var(--w);font-family:'Inter',sans-serif;font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s,background .2s;border-radius:0;-webkit-appearance:none;min-height:46px}
+.c-input:focus{border-bottom-color:var(--rb);background:rgba(139,23,23,.04)}
+.c-input::placeholder{color:rgba(255,255,255,.18)}
+.btn-add{background:var(--red);color:var(--w);border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;cursor:pointer;transition:background .2s;min-height:48px;margin-top:4px;-webkit-appearance:none}
+.btn-add:hover{background:#a01e1e}
+.btn-add:active{transform:scale(.98)}
+.btn-add:disabled{opacity:.5;cursor:not-allowed}
+
+.casas-list-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.08em;color:var(--dim);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.casa-card{background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s;position:relative;user-select:none;-webkit-user-select:none}
+.casa-card:hover{border-color:rgba(139,23,23,.3)}
+.casa-card.pressing{border-color:rgba(217,58,58,.5);opacity:.85}
+.press-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--rb);width:0}
+.casa-num{width:36px;height:36px;min-width:36px;border-radius:50%;background:rgba(139,23,23,.25);border:1px solid rgba(217,58,58,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--rb);flex-shrink:0}
+.casa-info{flex:1;min-width:0}
+.casa-nome{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--w);margin-bottom:4px}
+.casa-lider{font-family:'Inter',sans-serif;font-size:13px;color:var(--dim);margin-bottom:3px}
+.casa-end{font-family:'Inter',sans-serif;font-size:12px;color:var(--dimmer)}
+
+/* CONFIRM MODAL */
+#confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}
+#confirm-modal.show{display:flex}
+.modal-box{background:#141414;border:1px solid rgba(217,58,58,.3);padding:28px 24px;max-width:min(360px,90vw);width:100%}
+.modal-icon{font-size:28px;margin-bottom:12px;opacity:.8;text-align:center}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--w);text-align:center;margin-bottom:8px}
+.modal-desc{font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim);text-align:center;margin-bottom:22px;line-height:1.6}
+.modal-name{color:var(--rb);font-weight:600;font-style:normal}
+.modal-actions{display:flex;gap:10px}
+.modal-cancel{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:14px;cursor:pointer;transition:all .2s;-webkit-appearance:none}
+.modal-cancel:hover{background:rgba(255,255,255,.1);color:var(--w)}
+.modal-confirm{flex:1;background:rgba(139,23,23,.8);border:1px solid var(--rb);color:var(--w);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:14px;cursor:pointer;transition:all .2s;-webkit-appearance:none}
+.modal-confirm:hover{background:var(--rb)}
+</style>
 </head>
 <body>
 
@@ -124,42 +181,90 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
   <div class="header">
     <div class="header-left">
       <div class="header-logo">DNA</div>
-      <div class="header-title">Painel de Visitantes</div>
+      <div class="fb-dot" id="fb-dot"></div>
     </div>
     <div class="header-right">
-      <button class="btn-refresh" onclick="loadVisitors()">↻ Atualizar</button>
+      <button class="btn-sm" id="btn-refresh" onclick="refresh()">↻ Atualizar</button>
+      <a href="mapa.html" class="btn-sm" style="text-decoration:none">🗺 Mapa</a>
       <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
   </div>
 
-  <div class="stats-bar">
-    <div class="stat"><div class="stat-val red" id="st-hoje">—</div><div class="stat-label">Hoje</div></div>
-    <div class="stat"><div class="stat-val" id="st-total">—</div><div class="stat-label">Total Geral</div></div>
-    <div class="stat"><div class="stat-val green" id="st-1a">—</div><div class="stat-label">1ª Visita Hoje</div></div>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" id="t-visitantes" onclick="switchTab('visitantes')">Visitantes</button>
+    <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas Sacerdotais</button>
   </div>
 
-  <div class="filters">
-    <span class="filter-label">Filtrar:</span>
-    <input type="date" class="filter-input" id="filter-date" onchange="applyFilters()">
-    <div class="filter-tag">
-      <button class="ftag" id="ftag-all" onclick="setTagFilter('all')">Todos</button>
-      <button class="ftag" id="ftag-1a" onclick="setTagFilter('primeira')">1ª Visita</button>
-      <button class="ftag" id="ftag-ret" onclick="setTagFilter('retorno')">Retorno</button>
+  <!-- TAB: VISITANTES -->
+  <div id="tab-visitantes">
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-val red" id="st-hoje">—</div><div class="stat-label">Hoje</div></div>
+      <div class="stat"><div class="stat-val" id="st-total">—</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-val green" id="st-1a">—</div><div class="stat-label">1ª Visita Hoje</div></div>
     </div>
-    <button class="filter-clear" onclick="clearFilters()">Limpar</button>
+    <div class="filters">
+      <span class="filter-label">Filtrar:</span>
+      <input type="date" class="filter-input" id="filter-date" onchange="applyFilters()">
+      <div class="filter-tag">
+        <button class="ftag active" id="ftag-all" onclick="setTagFilter('all')">Todos</button>
+        <button class="ftag" id="ftag-1a" onclick="setTagFilter('primeira')">1ª Visita</button>
+        <button class="ftag" id="ftag-ret" onclick="setTagFilter('retorno')">Retorno</button>
+      </div>
+      <button class="filter-clear" onclick="clearFilters()">Limpar</button>
+    </div>
+    <div class="content" id="content">
+      <div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">Carregando...</div></div>
+    </div>
   </div>
 
-  <div class="content" id="content">
-    <div class="empty-state">
-      <div class="empty-icon">🌱</div>
-      <div class="empty-title">Carregando visitantes...</div>
+  <!-- TAB: CASAS SACERDOTAIS -->
+  <div id="tab-casas">
+    <div class="casas-form">
+      <div class="casas-form-title">Nova Casa Sacerdotal</div>
+      <div class="form-row">
+        <div>
+          <label class="c-label">Nome da Casa *</label>
+          <input type="text" class="c-input" id="c-nome" placeholder="Ex: Casa da Paz" autocapitalize="words">
+        </div>
+        <div>
+          <label class="c-label">Nome do Líder *</label>
+          <input type="text" class="c-input" id="c-lider" placeholder="Nome do líder" autocapitalize="words">
+        </div>
+      </div>
+      <div>
+        <label class="c-label">Endereço Completo *</label>
+        <input type="text" class="c-input" id="c-end" placeholder="Rua, número, bairro" autocapitalize="words">
+      </div>
+      <div style="margin-top:12px">
+        <label class="c-label">Dia e Horário do Encontro</label>
+        <input type="text" class="c-input" id="c-horario" placeholder="Ex: Quinta-feira às 19h30" autocapitalize="words">
+      </div>
+      <button class="btn-add" id="btn-add-casa" onclick="addCasa()" style="margin-top:16px">+ Cadastrar Casa</button>
+    </div>
+    <div class="casas-list-title" id="casas-list-title">Casas Cadastradas</div>
+    <div id="casas-list">
+      <div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">Nenhuma casa cadastrada</div><div class="empty-text">Adicione a primeira casa sacerdotal acima.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Confirmar exclusão</div>
+    <div class="modal-desc" id="modal-desc">Tem certeza que deseja excluir este registro?</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-confirm" id="modal-confirm-btn">Excluir</button>
     </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const db = getFirestore(initializeApp({
   apiKey:"AIzaSyC46bONBdDeVbK4e7E_zIgveEokleOpKa4",
@@ -170,20 +275,24 @@ const db = getFirestore(initializeApp({
   appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"
 }));
 
-const SENHA = 'dna2025'; // ← Mude aqui para alterar a senha
-let allVisitors = [];
-let tagFilter = 'all';
+setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'), 800);
 
-/* PASSWORD */
+const SENHA = 'dna2025';
+let allVisitors = [];
+let allCasas = [];
+let tagFilter = 'all';
+let currentTab = 'visitantes';
+
+/* ── GATE ── */
 window.checkPassword = function() {
   const val = document.getElementById('gate-input').value;
   const err = document.getElementById('gate-err');
   if (val === SENHA) {
     document.getElementById('gate').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
-    loadVisitors();
+    loadAll();
   } else {
-    err.textContent = 'Senha incorreta. Tente novamente.';
+    err.textContent = 'Senha incorreta.';
     document.getElementById('gate-input').value = '';
     document.getElementById('gate-input').focus();
   }
@@ -195,179 +304,322 @@ window.logout = function() {
   document.getElementById('gate-err').textContent = '';
 };
 
-/* LOAD VISITORS */
+/* ── TABS ── */
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.getElementById('tab-visitantes').style.display = tab==='visitantes' ? 'block' : 'none';
+  document.getElementById('tab-casas').classList.toggle('active', tab==='casas');
+  document.getElementById('t-visitantes').classList.toggle('active', tab==='visitantes');
+  document.getElementById('t-casas').classList.toggle('active', tab==='casas');
+  document.getElementById('btn-refresh').style.display = tab==='visitantes' ? 'block' : 'none';
+};
+document.getElementById('tab-visitantes').style.display = 'block';
+document.getElementById('btn-refresh').style.display = 'block';
+
+/* ── LOAD ALL ── */
+async function loadAll() {
+  await Promise.all([loadVisitors(), loadCasas()]);
+}
+window.refresh = function() {
+  if (currentTab==='visitantes') loadVisitors();
+  else loadCasas();
+};
+
+/* ── VISITORS ── */
 window.loadVisitors = async function() {
   const bar = document.getElementById('loading-bar');
   bar.style.display = 'block';
   try {
-    const q = query(collection(db,'visitantes'), orderBy('timestamp','desc'));
-    const snap = await getDocs(q);
+    const snap = await getDocs(query(collection(db,'visitantes'), orderBy('timestamp','desc')));
     allVisitors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     updateStats();
     applyFilters();
   } catch(e) {
-    console.error(e);
-    document.getElementById('content').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-text">Verifique as regras do Firestore e a conexão.</div></div>`;
+    document.getElementById('content').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-text">Verifique as regras do Firestore.</div></div>`;
   }
   bar.style.display = 'none';
 };
 
-function todayStr() {
-  return new Date().toLocaleDateString('pt-BR');
-}
-
 function updateStats() {
-  const todayDate = todayStr();
-  const hoje = allVisitors.filter(v => v.culto && v.culto.includes(todayDate.split('/').slice(0,2).join('/')));
-  // use date field for today's comparison (by day/month)
   const dm = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-  const hojeList = allVisitors.filter(v => v.culto && v.culto.includes(dm));
-  document.getElementById('st-hoje').textContent = hojeList.length;
+  const hoje = allVisitors.filter(v => v.culto && v.culto.includes(dm));
+  document.getElementById('st-hoje').textContent = hoje.length;
   document.getElementById('st-total').textContent = allVisitors.length;
-  document.getElementById('st-1a').textContent = hojeList.filter(v => v.primeiraVez).length;
+  document.getElementById('st-1a').textContent = hoje.filter(v=>v.primeiraVez).length;
 }
 
-/* FILTERS */
 window.applyFilters = function() {
   const dateVal = document.getElementById('filter-date').value;
   let filtered = [...allVisitors];
   if (dateVal) {
     const [y,m,d] = dateVal.split('-');
-    const str = `${d}/${m}`;
-    filtered = filtered.filter(v => v.culto && v.culto.includes(str));
+    filtered = filtered.filter(v => v.culto && v.culto.includes(`${d}/${m}`));
   }
-  if (tagFilter === 'primeira') filtered = filtered.filter(v => v.primeiraVez);
-  if (tagFilter === 'retorno')  filtered = filtered.filter(v => !v.primeiraVez);
+  if (tagFilter==='primeira') filtered = filtered.filter(v=>v.primeiraVez);
+  if (tagFilter==='retorno')  filtered = filtered.filter(v=>!v.primeiraVez);
   renderVisitors(filtered);
 };
 
 window.setTagFilter = function(tag) {
   tagFilter = tag;
-  document.getElementById('ftag-all').classList.toggle('active', tag==='all');
-  document.getElementById('ftag-1a').classList.toggle('active', tag==='primeira');
-  document.getElementById('ftag-ret').classList.toggle('active', tag==='retorno');
+  ['ftag-all','ftag-1a','ftag-ret'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById(tag==='all'?'ftag-all':tag==='primeira'?'ftag-1a':'ftag-ret').classList.add('active');
   applyFilters();
 };
 window.clearFilters = function() {
   document.getElementById('filter-date').value = '';
-  tagFilter = 'all';
-  ['ftag-all','ftag-1a','ftag-ret'].forEach(id => document.getElementById(id).classList.remove('active'));
-  document.getElementById('ftag-all').classList.add('active');
-  applyFilters();
+  window.setTagFilter('all');
 };
-setTagFilter('all');
 
-/* RENDER */
+/* ── PROXIMITY: suggest nearby casas ── */
+function extractWords(str) {
+  if (!str) return [];
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s]/g,' ')
+    .split(/\s+/)
+    .filter(w => w.length > 3 && !['rua','avenida','travessa','numero','bairro','bloco','casa','apto','lote'].includes(w));
+}
+function scoreSimilarity(addr1, addr2) {
+  const w1 = extractWords(addr1);
+  const w2 = extractWords(addr2);
+  if (!w1.length || !w2.length) return 0;
+  return w1.filter(w => w2.includes(w)).length;
+}
+function getCasasSugeridas(enderecoVisitante) {
+  if (!enderecoVisitante || !allCasas.length) return [];
+  const scored = allCasas.map(c => ({
+    ...c,
+    score: scoreSimilarity(enderecoVisitante, c.endereco)
+  })).filter(c => c.score > 0).sort((a,b) => b.score - a.score);
+  return scored.slice(0, 3);
+}
+
+/* ── RENDER VISITORS ── */
 function renderVisitors(list) {
   const cont = document.getElementById('content');
   if (!list.length) {
-    cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">Nenhum visitante encontrado</div><div class="empty-text">Tente mudar o filtro ou aguarde novos cadastros.</div></div>`;
+    cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">Nenhum visitante encontrado</div><div class="empty-text">Tente mudar o filtro.</div></div>`;
     return;
   }
-
-  // group by culto day
   const groups = {};
   list.forEach(v => {
     const key = v.culto || 'Sem data';
     if (!groups[key]) groups[key] = [];
     groups[key].push(v);
   });
-
   let html = '';
   Object.entries(groups).forEach(([day, visitors]) => {
-    html += `<div class="day-group">
-      <div class="day-header">
-        ${day.charAt(0).toUpperCase()+day.slice(1)}
-        <span class="day-count">${visitors.length} visitante${visitors.length!==1?'s':''}</span>
-      </div>`;
+    html += `<div class="day-group"><div class="day-header">${day.charAt(0).toUpperCase()+day.slice(1)}<span class="day-count">${visitors.length} visitante${visitors.length!==1?'s':''}</span></div>`;
     visitors.forEach(v => { html += buildCard(v); });
     html += `</div>`;
   });
   cont.innerHTML = html;
+  // attach long-press to each card
+  cont.querySelectorAll('.visitor-card').forEach(el => {
+    attachLongPress(el, 2000, () => {
+      const id = el.dataset.id;
+      const nome = el.dataset.nome;
+      openModal(`Excluir visitante`, `Tem certeza que deseja excluir <span class="modal-name">${nome}</span>? Esta ação não pode ser desfeita.`, async () => {
+        await deleteDoc(doc(db,'visitantes',id));
+        allVisitors = allVisitors.filter(v=>v.id!==id);
+        updateStats();
+        applyFilters();
+      });
+    });
+  });
 }
 
 function initials(nome) {
-  const parts = nome.trim().split(' ').filter(Boolean);
+  const parts = (nome||'').trim().split(' ').filter(Boolean);
   if (parts.length >= 2) return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
-  return parts[0].slice(0,2).toUpperCase();
+  return (parts[0]||'?').slice(0,2).toUpperCase();
 }
-
 function waLink(cel, msg) {
-  if (!cel) return '#';
-  const digits = cel.replace(/\D/g,'');
-  const num = '55' + digits;
-  return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+  const digits = (cel||'').replace(/\D/g,'');
+  return `https://wa.me/55${digits}?text=${encodeURIComponent(msg)}`;
 }
-
 function msg1(nome) {
-  return `Olá, ${nome.split(' ')[0]}! 😊
+  const n = nome.split(' ')[0];
+  return `Oi ${n}, tudo bem?
 
-Que alegria enorme ter você conosco hoje na *Terra Fértil*! 🌱
+Que alegria ter você com a gente hoje na Terra Fértil! Ficamos muito felizes com sua presença.
 
-Esperamos que cada momento tenha tocado o seu coração. Você não é apenas uma visita — você já faz parte da nossa família.
+Esperamos que o culto tenha tocado seu coração. Você já faz parte da nossa família e sempre terá um lugar aqui.
 
-Se tiver qualquer dúvida ou quiser saber mais sobre a nossa igreja, estamos aqui com o coração aberto! 🙏
+Qualquer dúvida sobre a nossa igreja, pode chamar. Estamos aqui para você!
 
-Com muito carinho,
-*Família Terra Fértil* ❤️`;
+Com carinho, família Terra Fértil`;
 }
-
 function msg2(nome) {
-  return `Olá, ${nome.split(' ')[0]}! 🌱
+  const n = nome.split(' ')[0];
+  return `Oi ${n}!
 
-Ainda estamos com o coração quentinho lembrando da sua presença na *Terra Fértil*! Foi uma honra ter você com a gente. 🙏
+Ainda pensando na sua presença com a gente no culto. Foi muito bom ter você aqui!
 
-Queremos muito te ver de novo! Nossos cultos acontecem:
-📅 *Terça-feira* às 20h
-📅 *Domingo* às 19h
+Queremos muito te ver de novo. A gente se reúne toda terça-feira às 20h e todo domingo às 19h. Você é sempre bem-vindo(a).
 
-Há sempre um lugar especial reservado para você. Conta com a nossa família! ❤️
-
-Com muito amor,
-*Família Terra Fértil* 🌱`;
+Conta com a gente. Com muito carinho, família Terra Fértil`;
 }
+
+const waIcon = `<svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
 
 function buildCard(v) {
-  const ini = initials(v.nome || '?');
+  const ini = initials(v.nome);
   const hasCel = v.celular && v.celular.length > 0;
-  const link1 = hasCel ? waLink(v.celular, msg1(v.nome)) : '#';
-  const link2 = hasCel ? waLink(v.celular, msg2(v.nome)) : '#';
-  const noCelClass = hasCel ? '' : 'no-cel';
-  const waIcon = `<svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
+  const noCel = hasCel ? '' : 'no-cel';
+  const casas = getCasasSugeridas(v.endereco);
+  const casasHTML = casas.length ? `
+    <div class="casas-sugeridas show">
+      <div class="casas-label">Casas Sacerdotais próximas</div>
+      ${casas.map(c=>`<span class="casa-pill"><strong>${c.nome}</strong> · ${c.lider}${c.horario?' · '+c.horario:''}</span>`).join('')}
+    </div>` : '';
 
-  return `<div class="visitor-card">
+  return `<div class="visitor-card" data-id="${v.id}" data-nome="${(v.nome||'').replace(/"/g,'&quot;')}">
+    <div class="press-bar"></div>
     <div class="card-top">
       <div class="avatar">${ini}</div>
       <div class="card-info">
-        <div class="card-name">${v.nome || '—'}</div>
-        ${v.celular ? `<div class="card-row">
-          <svg class="card-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.24 16.92z"/></svg>
-          <span class="card-text cel">${v.celular}</span>
-        </div>` : ''}
-        ${v.endereco ? `<div class="card-row">
-          <svg class="card-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span class="card-text">${v.endereco}</span>
-        </div>` : ''}
+        <div class="card-name">${v.nome||'—'}</div>
+        ${v.celular?`<div class="card-row"><svg class="card-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.24 16.92z"/></svg><span class="card-text cel">${v.celular}</span></div>`:''}
+        ${v.endereco?`<div class="card-row"><svg class="card-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="card-text">${v.endereco}</span></div>`:''}
         <div class="card-meta">
-          <span class="tag ${v.primeiraVez ? 'primeira' : 'retorno'}">${v.primeiraVez ? '1ª Visita' : 'Retorno'}</span>
-          ${v.horario ? `<span class="tag hora">${v.horario}</span>` : ''}
-          ${!hasCel ? `<span class="tag hora" style="color:rgba(255,100,100,.6)">Sem celular</span>` : ''}
+          <span class="tag ${v.primeiraVez?'primeira':'retorno'}">${v.primeiraVez?'1ª Visita':'Retorno'}</span>
+          ${v.horario?`<span class="tag hora">${v.horario}</span>`:''}
+          ${!hasCel?`<span class="tag hora" style="color:rgba(255,100,100,.6)">Sem celular</span>`:''}
         </div>
       </div>
     </div>
+    ${casasHTML}
     <div class="card-actions">
-      <a class="wa-btn msg1 ${noCelClass}" href="${link1}" target="_blank" rel="noopener">
-        ${waIcon} Boas-vindas
-      </a>
-      <a class="wa-btn msg2 ${noCelClass}" href="${link2}" target="_blank" rel="noopener">
-        ${waIcon} Follow-up 48h
-      </a>
+      <a class="wa-btn msg1 ${noCel}" href="${hasCel?waLink(v.celular,msg1(v.nome)):'#'}" target="_blank" rel="noopener">${waIcon} Boas-vindas</a>
+      <a class="wa-btn msg2 ${noCel}" href="${hasCel?waLink(v.celular,msg2(v.nome)):'#'}" target="_blank" rel="noopener">${waIcon} Follow-up 48h</a>
     </div>
   </div>`;
 }
 
-// auto-refresh every 60s
-setInterval(window.loadVisitors, 60000);
+/* ── CASAS SACERDOTAIS ── */
+window.loadCasas = async function() {
+  try {
+    const snap = await getDocs(query(collection(db,'casas'), orderBy('timestamp','asc')));
+    allCasas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCasas();
+  } catch(e) { console.error(e); }
+};
+
+function renderCasas() {
+  const list = document.getElementById('casas-list');
+  const title = document.getElementById('casas-list-title');
+  title.textContent = `Casas Cadastradas (${allCasas.length})`;
+  if (!allCasas.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">Nenhuma casa cadastrada</div><div class="empty-text">Adicione a primeira casa sacerdotal acima.</div></div>`;
+    return;
+  }
+  list.innerHTML = allCasas.map((c,i) => `
+    <div class="casa-card" data-id="${c.id}" data-nome="${(c.nome||'').replace(/"/g,'&quot;')}">
+      <div class="press-bar"></div>
+      <div class="casa-num">${i+1}</div>
+      <div class="casa-info">
+        <div class="casa-nome">${c.nome||'—'}</div>
+        <div class="casa-lider">Líder: ${c.lider||'—'}</div>
+        ${c.endereco?`<div class="casa-end">${c.endereco}</div>`:''}
+        ${c.horario?`<div class="casa-end" style="color:var(--rb);margin-top:3px">${c.horario}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  list.querySelectorAll('.casa-card').forEach(el => {
+    attachLongPress(el, 2000, () => {
+      const id = el.dataset.id;
+      const nome = el.dataset.nome;
+      openModal('Excluir casa sacerdotal', `Tem certeza que deseja excluir a casa <span class="modal-name">${nome}</span>? Esta ação não pode ser desfeita.`, async () => {
+        await deleteDoc(doc(db,'casas',id));
+        allCasas = allCasas.filter(c=>c.id!==id);
+        renderCasas();
+        if (currentTab==='visitantes') applyFilters();
+      });
+    });
+  });
+}
+
+window.addCasa = async function() {
+  const nome = document.getElementById('c-nome').value.trim();
+  const lider = document.getElementById('c-lider').value.trim();
+  const end = document.getElementById('c-end').value.trim();
+  const horario = document.getElementById('c-horario').value.trim();
+  if (!nome||!lider||!end) { alert('Preencha nome, líder e endereço.'); return; }
+  const btn = document.getElementById('btn-add-casa');
+  btn.disabled = true;
+  try {
+    const ref = await addDoc(collection(db,'casas'), { nome, lider, endereco:end, horario:horario||null, timestamp:serverTimestamp() });
+    allCasas.push({ id:ref.id, nome, lider, endereco:end, horario:horario||null });
+    ['c-nome','c-lider','c-end','c-horario'].forEach(id=>document.getElementById(id).value='');
+    renderCasas();
+  } catch(e) { alert('Erro ao salvar. Tente novamente.'); }
+  btn.disabled = false;
+};
+
+/* ── LONG PRESS ── */
+function attachLongPress(el, duration, cb) {
+  let timer = null;
+  let bar = el.querySelector('.press-bar');
+  let startTime;
+  let animFrame;
+
+  function animBar() {
+    const elapsed = Date.now() - startTime;
+    const pct = Math.min(elapsed / duration * 100, 100);
+    if (bar) bar.style.width = pct + '%';
+    if (pct < 100) animFrame = requestAnimationFrame(animBar);
+  }
+  function start(e) {
+    e.preventDefault();
+    el.classList.add('pressing');
+    startTime = Date.now();
+    if (bar) { bar.style.transition = 'none'; bar.style.width = '0'; }
+    animFrame = requestAnimationFrame(animBar);
+    timer = setTimeout(() => { cancel(); cb(); }, duration);
+  }
+  function cancel() {
+    clearTimeout(timer);
+    cancelAnimationFrame(animFrame);
+    el.classList.remove('pressing');
+    if (bar) { bar.style.width = '0'; }
+  }
+  el.addEventListener('mousedown', start);
+  el.addEventListener('touchstart', start, {passive:false});
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchcancel', cancel);
+}
+
+/* ── MODAL ── */
+let pendingAction = null;
+function openModal(title, desc, action) {
+  pendingAction = action;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-desc').innerHTML = desc;
+  document.getElementById('confirm-modal').classList.add('show');
+}
+window.closeModal = function() {
+  document.getElementById('confirm-modal').classList.remove('show');
+  pendingAction = null;
+};
+document.getElementById('modal-confirm-btn').onclick = async function() {
+  if (pendingAction) {
+    this.disabled = true;
+    this.textContent = 'Excluindo...';
+    await pendingAction();
+    this.disabled = false;
+    this.textContent = 'Excluir';
+  }
+  window.closeModal();
+};
+document.getElementById('confirm-modal').addEventListener('click', function(e) {
+  if (e.target === this) window.closeModal();
+});
+
+setInterval(loadAll, 60000);
 </script>
 </body>
 </html>
