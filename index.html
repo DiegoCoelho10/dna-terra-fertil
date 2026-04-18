@@ -212,8 +212,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .back-btn{position:fixed;top:calc(var(--sat) + 12px);left:calc(var(--sal) + 12px);background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:clamp(9px,2.3vw,11px);letter-spacing:.2em;text-transform:uppercase;z-index:200;display:none;font-family:'Inter',sans-serif;padding:10px;min-height:44px;min-width:44px;align-items:center;-webkit-appearance:none}
 .back-btn.visible{display:flex}
 .back-btn:hover{color:var(--w)}
-.fb-status{position:fixed;bottom:calc(var(--sab) + 6px);right:calc(var(--sar) + 10px);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--dimmer);z-index:198;display:flex;align-items:center;gap:5px;transition:opacity .5s}
-.fb-dot{width:5px;height:5px;border-radius:50%;background:#f44336}
+.fb-status{position:fixed;bottom:calc(var(--sab) + 8px);right:calc(var(--sar) + 12px);z-index:198;transition:opacity .5s}
+.fb-dot{width:7px;height:7px;border-radius:50%;background:#f44336}
 .fb-dot.ok{background:#4caf50}
 
 @keyframes fade-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -390,7 +390,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <button class="nav-btn" id="nav-btn" onclick="nextScene()">Próximo →</button>
 <button class="skip-btn" id="skip-btn" onclick="skipToImpact()">Pular ↗</button>
 <button class="back-btn" id="back-btn" onclick="prevScene()">← Voltar</button>
-<div class="fb-status" id="fb-status"><div class="fb-dot" id="fb-dot"></div><span id="fb-label">conectando...</span></div>
+<div class="fb-status" id="fb-status"><div class="fb-dot" id="fb-dot"></div></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -406,7 +406,6 @@ const db = getFirestore(initializeApp({
 }));
 
 document.getElementById('fb-dot').classList.add('ok');
-document.getElementById('fb-label').textContent='firebase ok';
 setTimeout(()=>document.getElementById('fb-status').style.opacity='0',4000);
 
 /* ── TOAST ── */
