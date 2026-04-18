@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DNA · Terra Fértil</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;
+  --red:#8B1717;
+  --red-bright:#D93A3A;
+  --red-glow:rgba(139,23,23,0.4);
+  --white:#FFFFFF;
+  --dim:rgba(255,255,255,0.55);
+  --dimmer:rgba(255,255,255,0.3);
+}
+html,body{
+  height:100%;width:100%;
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── SCREENS ── */
+.screen{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.7s ease;
+  overflow:hidden;
+}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ── GRAIN TEXTURE ── */
+.grain::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:0.4;
+}
+
+/* ── WELCOME SCREEN ── */
+#s-welcome{
+  background:radial-gradient(ellipse 80% 60% at 50% 40%, #1a0505 0%, var(--bg) 70%);
+  gap:0;
+}
+.dna-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(80px,20vw,160px);
+  letter-spacing:0.15em;
+  color:var(--white);
+  line-height:1;
+  position:relative;
+  animation:pulse-logo 3s ease-in-out infinite;
+}
+.dna-logo::after{
+  content:'DNA';
+  position:absolute;inset:0;
+  color:var(--red-bright);
+  filter:blur(30px);
+  opacity:0.25;
+  animation:pulse-logo 3s ease-in-out infinite reverse;
+}
+@keyframes pulse-logo{
+  0%,100%{text-shadow:0 0 80px rgba(217,58,58,0.15)}
+  50%{text-shadow:0 0 120px rgba(217,58,58,0.35)}
+}
+.welcome-sub{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(14px,3vw,20px);
+  font-style:italic;
+  color:var(--dim);
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  margin-top:8px;margin-bottom:60px;
+}
+.team-badge{
+  font-size:11px;
+  letter-spacing:0.3em;
+  color:var(--dimmer);
+  text-transform:uppercase;
+  margin-top:48px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:24px;
+  width:100%;max-width:320px;
+  text-align:center;
+}
+.btn-primary{
+  background:var(--red);
+  color:var(--white);
+  border:none;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  padding:18px 48px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s ease;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+  transform:translateX(-100%);transition:transform 0.6s;
+}
+.btn-primary:hover::before{transform:translateX(100%)}
+.btn-primary:hover{background:#A01E1E;transform:scale(1.02)}
+.btn-primary:active{transform:scale(0.98)}
+
+/* ── SCENE SCREENS ── */
+.scene{
+  background:var(--bg);
+  padding:40px 32px;
+  text-align:center;
+}
+.scene-num{
+  font-size:11px;letter-spacing:0.4em;
+  color:var(--red-bright);
+  text-transform:uppercase;
+  margin-bottom:40px;
+  opacity:0;
+  animation:none;
+}
+.scene.active .scene-num{animation:fade-up 0.6s 0.1s forwards}
+.scene-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(36px,8vw,72px);
+  line-height:1;
+  letter-spacing:0.05em;
+  color:var(--white);
+  margin-bottom:24px;
+  opacity:0;animation:none;
+}
+.scene.active .scene-title{animation:fade-up 0.7s 0.25s forwards}
+.scene-body{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(16px,3vw,22px);
+  line-height:1.7;
+  color:var(--dim);
+  max-width:560px;margin:0 auto 20px;
+  opacity:0;animation:none;
+}
+.scene.active .scene-body{animation:fade-up 0.7s 0.45s forwards}
+.scene-bold{color:var(--white);font-weight:600}
+.quote-block{
+  border-left:2px solid var(--red-bright);
+  text-align:left;
+  padding:20px 24px;
+  margin:32px auto;
+  max-width:520px;
+  background:rgba(139,23,23,0.08);
+}
+.quote-block p{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(17px,3vw,22px);
+  font-style:italic;
+  color:rgba(255,255,255,0.85);
+  line-height:1.65;
+}
+
+/* ── PILLARS ── */
+.pillars{
+  display:flex;flex-direction:column;gap:20px;
+  width:100%;max-width:500px;margin:0 auto;
+  opacity:0;animation:none;
+}
+.scene.active .pillars{animation:fade-up 0.8s 0.45s forwards}
+.pillar{
+  display:flex;align-items:flex-start;gap:16px;
+  text-align:left;
+  padding:20px;
+  border:1px solid rgba(139,23,23,0.25);
+  background:rgba(139,23,23,0.06);
+}
+.pillar-icon{
+  width:36px;height:36px;min-width:36px;
+  border-radius:50%;
+  background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.pillar-icon svg{width:16px;height:16px;stroke:white;fill:none;stroke-width:1.8}
+.pillar-name{
+  font-family:'Inter',sans-serif;
+  font-size:13px;font-weight:600;
+  color:var(--white);
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.pillar-ref{
+  font-family:'Crimson Pro',serif;
+  font-size:13px;font-style:italic;
+  color:var(--red-bright);
+  margin-bottom:4px;
+}
+.pillar-desc{
+  font-family:'Crimson Pro',serif;
+  font-size:15px;color:var(--dim);line-height:1.5;
+}
+
+/* ── MISSION ── */
+.mission-cards{
+  display:flex;flex-direction:column;gap:16px;
+  width:100%;max-width:480px;margin:0 auto;
+  opacity:0;animation:none;
+}
+.scene.active .mission-cards{animation:fade-up 0.8s 0.4s forwards}
+.mcard{padding:24px;border:1px solid rgba(255,255,255,0.08);text-align:left}
+.mcard-label{
+  font-size:10px;letter-spacing:0.35em;
+  text-transform:uppercase;color:var(--red-bright);
+  margin-bottom:12px;
+}
+.mcard-text{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(15px,2.5vw,19px);
+  color:rgba(255,255,255,0.85);
+  line-height:1.65;
+}
+
+/* ── IMPACT SCREEN ── */
+#s-impact{
+  background:radial-gradient(ellipse 90% 50% at 50% 60%, #1a0808 0%, var(--bg) 65%);
+}
+.impact-en{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(42px,10vw,90px);
+  letter-spacing:0.06em;
+  color:var(--white);
+  text-align:center;
+  line-height:1;
+  opacity:0;animation:none;
+}
+#s-impact.active .impact-en{animation:rise 1s 0.2s forwards}
+.impact-pt{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(13px,2.5vw,17px);
+  font-style:italic;
+  color:var(--dimmer);
+  letter-spacing:0.15em;
+  margin-top:8px;margin-bottom:48px;
+  text-align:center;
+  opacity:0;animation:none;
+}
+#s-impact.active .impact-pt{animation:fade-up 0.7s 0.9s forwards}
+#s-impact.active .btn-primary{animation:fade-up 0.7s 1.3s both}
+.btn-primary.hidden-anim{opacity:0;animation:none}
+
+/* ── REGISTRATION ── */
+#s-form{
+  background:var(--bg);
+  justify-content:flex-start;
+  padding:0;overflow-y:auto;
+}
+.form-wrap{
+  width:100%;max-width:480px;
+  padding:48px 28px 60px;
+  margin:0 auto;
+}
+.form-header{margin-bottom:36px}
+.form-tag{
+  font-size:10px;letter-spacing:0.4em;
+  text-transform:uppercase;color:var(--red-bright);
+  display:block;margin-bottom:10px;
+}
+.form-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,7vw,54px);
+  letter-spacing:0.05em;
+  line-height:1;
+}
+.form-sub{
+  font-family:'Crimson Pro',serif;
+  font-size:15px;color:var(--dim);
+  margin-top:8px;font-style:italic;
+}
+.form-group{margin-bottom:24px}
+.form-label{
+  display:block;
+  font-size:10px;letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--dimmer);
+  margin-bottom:10px;
+}
+.form-input{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-bottom-color:rgba(255,255,255,0.25);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  font-size:16px;font-weight:400;
+  padding:14px 16px;
+  outline:none;
+  transition:border-color 0.2s,background 0.2s;
+  border-radius:0;
+  -webkit-appearance:none;
+}
+.form-input:focus{
+  border-color:rgba(139,23,23,0.6);
+  border-bottom-color:var(--red-bright);
+  background:rgba(139,23,23,0.06);
+}
+.form-input::placeholder{color:rgba(255,255,255,0.2)}
+
+/* toggle */
+.toggle-group{margin-bottom:32px}
+.toggle-q{
+  font-size:10px;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--dimmer);
+  margin-bottom:12px;display:block;
+}
+.toggle-wrap{display:flex;gap:0}
+.toggle-opt{
+  flex:1;padding:13px;text-align:center;
+  font-size:13px;font-weight:500;letter-spacing:0.05em;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,0.12);
+  color:var(--dimmer);
+  transition:all 0.2s;
+  background:transparent;
+  -webkit-appearance:none;
+}
+.toggle-opt:first-child{border-right:none}
+.toggle-opt.sel{
+  background:var(--red);
+  border-color:var(--red);
+  color:var(--white);
+}
+.btn-save{
+  width:100%;
+  background:var(--red);color:var(--white);
+  border:none;padding:18px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;font-weight:600;
+  letter-spacing:0.2em;text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.btn-save:hover{background:#A01E1E}
+.btn-save:active{transform:scale(0.99)}
+.btn-save:disabled{opacity:0.4;cursor:not-allowed}
+
+/* success */
+.success-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(8,8,8,0.97);
+  flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;gap:20px;
+}
+.success-overlay.show{display:flex}
+.success-check{
+  width:72px;height:72px;border-radius:50%;
+  border:2px solid var(--red-bright);
+  display:flex;align-items:center;justify-content:center;
+  animation:scale-in 0.4s ease both;
+}
+.success-check svg{width:32px;height:32px;stroke:var(--red-bright);fill:none;stroke-width:2;stroke-linecap:round}
+.success-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:0.08em;
+  text-align:center;
+}
+.success-msg{
+  font-family:'Crimson Pro',serif;
+  font-size:18px;font-style:italic;
+  color:var(--dim);text-align:center;
+  max-width:280px;
+}
+.success-new{
+  margin-top:16px;
+  background:none;border:1px solid rgba(255,255,255,0.15);
+  color:var(--dimmer);
+  font-family:'Inter',sans-serif;
+  font-size:11px;letter-spacing:0.25em;
+  text-transform:uppercase;
+  padding:12px 28px;cursor:pointer;
+  transition:all 0.2s;
+}
+.success-new:hover{border-color:var(--red);color:var(--white)}
+
+/* progress dots */
+.progress-dots{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:100;
+}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all 0.3s}
+.dot.active{background:var(--red-bright);width:18px;border-radius:3px}
+
+/* nav btn */
+.nav-btn{
+  position:fixed;bottom:28px;right:28px;
+  background:var(--red);color:var(--white);
+  border:none;padding:14px 28px;
+  font-family:'Inter',sans-serif;
+  font-size:12px;font-weight:600;
+  letter-spacing:0.2em;text-transform:uppercase;
+  cursor:pointer;
+  z-index:100;display:none;
+  transition:all 0.2s;
+}
+.nav-btn:hover{background:#A01E1E}
+.nav-btn.visible{display:block}
+
+/* skip */
+.skip-btn{
+  position:fixed;top:20px;right:20px;
+  background:none;border:none;
+  color:var(--dimmer);cursor:pointer;
+  font-size:11px;letter-spacing:0.2em;
+  text-transform:uppercase;z-index:100;
+  display:none;transition:color 0.2s;
+  font-family:'Inter',sans-serif;
+}
+.skip-btn:hover{color:var(--white)}
+.skip-btn.visible{display:block}
+
+/* back btn */
+.back-btn{
+  position:fixed;top:20px;left:20px;
+  background:none;border:none;
+  color:var(--dimmer);cursor:pointer;
+  font-size:11px;letter-spacing:0.2em;
+  text-transform:uppercase;z-index:100;
+  display:none;
+  font-family:'Inter',sans-serif;
+  padding:8px;
+}
+.back-btn.visible{display:block}
+.back-btn:hover{color:var(--white)}
+
+/* keyframes */
+@keyframes fade-up{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes rise{
+  0%{opacity:0;transform:translateY(40px) scale(0.95)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes scale-in{
+  from{transform:scale(0.5);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* Scene backgrounds */
+#s-s1{background:radial-gradient(ellipse 70% 50% at 30% 50%, #180808 0%, var(--bg) 60%)}
+#s-s2{background:var(--bg)}
+#s-s3{background:var(--bg);justify-content:flex-start;overflow-y:auto;padding:60px 28px}
+#s-s4{background:radial-gradient(ellipse 70% 50% at 70% 50%, #0f0808 0%, var(--bg) 60%)}
+
+.scroll-scene{justify-content:flex-start;padding-top:60px;padding-bottom:80px;overflow-y:auto}
+</style>
+</head>
+<body class="grain">
+
+<!-- SCREEN 0: WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="dna-logo">DNA</div>
+  <div class="welcome-sub">Terra Fértil</div>
+  <button class="btn-primary" onclick="goScene(1)">Iniciar DNA Experience</button>
+  <div class="team-badge">DNA Team · Recepção e Acolhimento</div>
+</div>
+
+<!-- SCENE 1: ACOLHIMENTO DNA -->
+<div class="screen scene" id="s-s1">
+  <div class="scene-num">01 · Nossa Identidade</div>
+  <div class="scene-title">ACOLHIMENTO<br>DNA</div>
+  <div class="scene-body">
+    O DNA é o código genético espiritual da Terra Fértil, manifestado em cada sorriso, cada abraço, cada boas-vindas.<br><br>
+    A recepção não é um cargo. É uma <span class="scene-bold">cultura viva</span>.
+  </div>
+</div>
+
+<!-- SCENE 2: POR QUE É ESSENCIAL -->
+<div class="screen scene" id="s-s2">
+  <div class="scene-num">02 · O Propósito</div>
+  <div class="scene-title">Por Que<br>É Essencial?</div>
+  <div class="quote-block" style="opacity:0;animation:none" id="q-block">
+    <p>"Pessoas que chegam para visitar a igreja e saem sem ser notadas, sem um sorriso, sem um abraço, dificilmente retornarão."</p>
+  </div>
+  <div class="scene-body" style="font-size:clamp(15px,2.5vw,19px)">
+    Cada visitante carrega uma história. Nossa missão é garantir que ninguém cruze as portas da Terra Fértil e se sinta invisível.<br><br>
+    <span class="scene-bold">A recepção começa antes mesmo da palavra ser pregada.</span>
+  </div>
+</div>
+
+<!-- SCENE 3: OS TRÊS PILARES -->
+<div class="screen scene scroll-scene" id="s-s3">
+  <div class="scene-num" style="text-align:center">03 · O Fundamento</div>
+  <div class="scene-title">Os Três Pilares</div>
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 9c0 3 2 5.5 5 7v4h4v-4c3-1.5 5-4 5-7 0-4-3-7-7-7z"/></svg>
+      </div>
+      <div>
+        <div class="pillar-name">A Herança Genética</div>
+        <div class="pillar-ref">Gálatas 3:26-27</div>
+        <div class="pillar-desc">Todos somos filhos mediante a fé. Nossa identidade coletiva começa aqui.</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div>
+        <div class="pillar-name">O Marcador Genético</div>
+        <div class="pillar-ref">João 13:35</div>
+        <div class="pillar-desc">O amor é a nossa identidade. É o que nos distingue e nos une como família.</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </div>
+      <div>
+        <div class="pillar-name">A Conexão no Corpo</div>
+        <div class="pillar-ref">Efésios 4:16</div>
+        <div class="pillar-desc">Juntas, que ligam cada parte. Cada membro é indispensável ao todo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 4: MISSÃO & VISÃO -->
+<div class="screen scene" id="s-s4">
+  <div class="scene-num">04 · Missão &amp; Visão</div>
+  <div class="scene-title">Quem Somos</div>
+  <div class="mission-cards">
+    <div class="mcard">
+      <div class="mcard-label">Missão</div>
+      <div class="mcard-text">Manifestar a essência da família de Deus através de um acolhimento intencional, <strong style="color:white">transformando visitantes em membros da família</strong>.</div>
+    </div>
+    <div class="mcard">
+      <div class="mcard-label">Visão</div>
+      <div class="mcard-text">Ser o <strong style="color:white">povo mais feliz e acolhedor</strong> da terra. Ninguém se sente um estranho na casa do Pai.</div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPACT SCREEN -->
+<div class="screen" id="s-impact">
+  <div class="impact-en">It's in our DNA.</div>
+  <div class="impact-pt">Está no nosso DNA.</div>
+  <button class="btn-primary hidden-anim" onclick="goForm()" id="btn-iniciar">
+    Iniciar Cadastro
+  </button>
+</div>
+
+<!-- REGISTRATION FORM -->
+<div class="screen" id="s-form">
+  <div class="form-wrap">
+    <div class="form-header">
+      <span class="form-tag">DNA · Terra Fértil</span>
+      <div class="form-title">NOVO<br>VISITANTE</div>
+      <div class="form-sub">Cada pessoa que chega merece ser lembrada.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nome Completo *</label>
+      <input type="text" class="form-input" id="f-nome" placeholder="Como você se chama?" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Celular *</label>
+      <input type="tel" class="form-input" id="f-cel" placeholder="(11) 99999-9999" inputmode="numeric" maxlength="15">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Bairro / Cidade</label>
+      <input type="text" class="form-input" id="f-end" placeholder="Onde você mora?" autocomplete="off">
+    </div>
+
+    <div class="toggle-group">
+      <span class="toggle-q">É a sua primeira visita à Terra Fértil?</span>
+      <div class="toggle-wrap">
+        <button class="toggle-opt sel" id="t-sim" onclick="setToggle(true)">Sim, primeira vez</button>
+        <button class="toggle-opt" id="t-nao" onclick="setToggle(false)">Já estive aqui</button>
+      </div>
+    </div>
+
+    <button class="btn-save" id="btn-save" onclick="salvar()">
+      Acolher &amp; Registrar
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="success">
+  <div class="success-check">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="success-name" id="suc-name">Bem-vindo(a)!</div>
+  <div class="success-msg">Que alegria ter você aqui. Você já faz parte dessa família.</div>
+  <button class="success-new" onclick="novoVisitante()">+ Próximo Visitante</button>
+</div>
+
+<!-- PROGRESS DOTS -->
+<div class="progress-dots" id="dots"></div>
+
+<!-- NAV BUTTON -->
+<button class="nav-btn" id="nav-btn" onclick="nextScene()">Próximo →</button>
+
+<!-- SKIP -->
+<button class="skip-btn" id="skip-btn" onclick="skipToForm()">Pular ↗</button>
+
+<!-- BACK -->
+<button class="back-btn" id="back-btn" onclick="prevScene()">← Voltar</button>
+
+<script>
+const TOTAL_SCENES = 6; // 0=welcome, 1-4=scenes, 5=impact, 6=form
+let current = 0;
+
+const screens = ['s-welcome','s-s1','s-s2','s-s3','s-s4','s-impact','s-form'];
+const dotsEl = document.getElementById('dots');
+const navBtn = document.getElementById('nav-btn');
+const skipBtn = document.getElementById('skip-btn');
+const backBtn = document.getElementById('back-btn');
+
+// build dots (exclude welcome and form)
+for(let i=0;i<5;i++){
+  const d = document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.id='dot-'+i;
+  dotsEl.appendChild(d);
+}
+
+function showScreen(idx){
+  screens.forEach((id,i)=>{
+    const el = document.getElementById(id);
+    el.classList.toggle('active', i===idx);
+  });
+  // reset animations for scenes
+  const sceneIds=['s-s1','s-s2','s-s3','s-s4'];
+  sceneIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.classList.contains('active')){
+      void el.offsetWidth;
+    }
+  });
+  // quote block special
+  if(idx===2){
+    const qb=document.getElementById('q-block');
+    qb.style.opacity='0';qb.style.animation='none';
+    void qb.offsetWidth;
+    qb.style.animation='fade-up 0.7s 0.65s forwards';
+  }
+
+  // dots (only show on scenes 1-5)
+  dotsEl.style.display = (idx>=1 && idx<=5) ? 'flex':'none';
+  if(idx>=1 && idx<=5){
+    document.querySelectorAll('.dot').forEach((d,i)=>{
+      d.classList.toggle('active', i===(idx-1));
+    });
+  }
+
+  // nav btn
+  navBtn.classList.toggle('visible', idx>=1 && idx<=4);
+  // skip btn
+  skipBtn.classList.toggle('visible', idx>=1 && idx<=4);
+  // back btn
+  backBtn.classList.toggle('visible', idx>=1 && idx<=5);
+
+  current = idx;
+}
+
+function goScene(n){ showScreen(n); }
+function nextScene(){ if(current<6) showScreen(current+1); }
+function prevScene(){ if(current>0) showScreen(current-1); }
+function skipToForm(){ showScreen(5); }
+function goForm(){ showScreen(6); }
+
+// phone mask
+document.getElementById('f-cel').addEventListener('input', function(e){
+  let v = e.target.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
+  let f='';
+  if(v.length>0) f='('+v.slice(0,2);
+  if(v.length>2) f+=') '+v.slice(2,7);
+  if(v.length>7) f+='-'+v.slice(7,11);
+  e.target.value=f;
+});
+
+let primeiraVez = true;
+function setToggle(val){
+  primeiraVez = val;
+  document.getElementById('t-sim').classList.toggle('sel', val);
+  document.getElementById('t-nao').classList.toggle('sel', !val);
+}
+
+function salvar(){
+  const nome = document.getElementById('f-nome').value.trim();
+  const cel = document.getElementById('f-cel').value.trim();
+  if(!nome){alert('Por favor, informe o nome do visitante.');document.getElementById('f-nome').focus();return;}
+  if(cel && cel.replace(/\D/g,'').length < 10){alert('Celular incompleto. Use o formato (XX) XXXXX-XXXX.');document.getElementById('f-cel').focus();return;}
+
+  const record = {
+    nome,
+    celular: cel || '—',
+    bairro: document.getElementById('f-end').value.trim() || '—',
+    primeiraVez,
+    data: new Date().toLocaleString('pt-BR')
+  };
+  console.log('[DNA] Registro:', record);
+
+  // show success
+  const sn = document.getElementById('suc-name');
+  const firstName = nome.split(' ')[0];
+  sn.textContent = 'Bem-vindo(a), '+firstName+'!';
+  document.getElementById('success').classList.add('show');
+}
+
+function novoVisitante(){
+  document.getElementById('success').classList.remove('show');
+  document.getElementById('f-nome').value='';
+  document.getElementById('f-cel').value='';
+  document.getElementById('f-end').value='';
+  setToggle(true);
+  document.getElementById('f-nome').focus();
+}
+
+// keyboard: Enter advances on scenes
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && current>=1 && current<=4) nextScene();
+  if(e.key==='ArrowRight' && current>=1 && current<=4) nextScene();
+  if(e.key==='ArrowLeft' && current>=1) prevScene();
+});
+
+// swipe support
+let startX=0;
+document.addEventListener('touchstart',e=>{startX=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx = e.changedTouches[0].clientX - startX;
+  if(Math.abs(dx)>60 && current>=1 && current<=4){
+    if(dx<0) nextScene(); else prevScene();
+  }
+},{passive:true});
+</script>
+</body>
+</html>
