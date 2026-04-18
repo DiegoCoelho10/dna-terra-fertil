@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin · DNA Terra Fértil</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080808;--card:#111111;--card2:#161616;
+  --red:#8B1717;--rb:#D93A3A;--border:rgba(255,255,255,.08);
+  --w:#fff;--dim:rgba(255,255,255,.55);--dimmer:rgba(255,255,255,.3);
+  --green:#2e7d32;--green-l:#4caf50;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ── PASSWORD GATE ── */
+#gate{position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 42%,#1a0505 0%,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9999;padding:24px}
+#gate.hidden{display:none}
+.gate-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,15vw,96px);letter-spacing:.15em;color:var(--w);position:relative}
+.gate-logo::after{content:'DNA';position:absolute;inset:0;color:var(--rb);filter:blur(28px);opacity:.2}
+.gate-sub{font-family:'Crimson Pro',serif;font-style:italic;font-size:16px;color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-top:-8px}
+.gate-label{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--dimmer);margin-top:8px}
+.gate-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-bottom-color:rgba(255,255,255,.3);color:var(--w);font-family:'Inter',sans-serif;font-size:18px;padding:14px 20px;outline:none;width:min(280px,90vw);text-align:center;letter-spacing:.15em;border-radius:0;-webkit-appearance:none;transition:border-color .2s}
+.gate-input:focus{border-bottom-color:var(--rb);background:rgba(139,23,23,.06)}
+.gate-btn{background:var(--red);color:var(--w);border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:16px 40px;cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .2s;margin-top:4px;min-height:52px}
+.gate-btn:hover{background:#a01e1e}
+.gate-err{color:rgba(255,120,120,.9);font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;min-height:20px}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh;padding-bottom:calc(var(--sab) + 20px)}
+#app.visible{display:block}
+
+/* HEADER */
+.header{background:rgba(8,8,8,.95);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-left{display:flex;align-items:baseline;gap:12px}
+.header-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.12em;color:var(--w)}
+.header-title{font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim)}
+.header-right{display:flex;align-items:center;gap:10px}
+.btn-refresh{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all .2s;border-radius:2px}
+.btn-refresh:hover{background:rgba(255,255,255,.1);color:var(--w)}
+.btn-logout{background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;padding:8px}
+.btn-logout:hover{color:var(--w)}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.stat{background:var(--bg);padding:16px 20px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,40px);letter-spacing:.05em;color:var(--w);line-height:1}
+.stat-label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer);margin-top:4px}
+.stat-val.red{color:var(--rb)}
+.stat-val.green{color:var(--green-l)}
+
+/* FILTERS */
+.filters{padding:16px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.filter-label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer)}
+.filter-input{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--w);font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;outline:none;border-radius:2px;-webkit-appearance:none;min-height:36px}
+.filter-input:focus{border-color:rgba(217,58,58,.4)}
+.filter-clear{background:none;border:1px solid var(--border);color:var(--dimmer);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:8px 12px;cursor:pointer;border-radius:2px;transition:all .2s}
+.filter-clear:hover{border-color:var(--rb);color:var(--w)}
+.filter-tag{display:flex;gap:6px}
+.ftag{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--dim);font-size:11px;padding:6px 12px;cursor:pointer;border-radius:2px;transition:all .2s;-webkit-appearance:none}
+.ftag.active{background:rgba(139,23,23,.3);border-color:var(--rb);color:var(--w)}
+
+/* CONTENT */
+.content{padding:20px;max-width:900px;margin:0 auto}
+.day-group{margin-bottom:28px}
+.day-header{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.08em;color:var(--dim);padding:8px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;align-items:baseline;gap:12px}
+.day-count{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;background:rgba(139,23,23,.25);color:var(--rb);padding:3px 10px;border-radius:20px;letter-spacing:.05em}
+
+/* VISITOR CARD */
+.visitor-card{background:var(--card);border:1px solid var(--border);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.visitor-card:hover{border-color:rgba(139,23,23,.35)}
+.card-top{display:flex;align-items:flex-start;gap:14px;padding:16px}
+.avatar{width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;color:var(--w);flex-shrink:0}
+.card-info{flex:1;min-width:0}
+.card-name{font-family:'Inter',sans-serif;font-size:clamp(15px,3.8vw,17px);font-weight:600;color:var(--w);margin-bottom:4px;word-break:break-word}
+.card-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.card-icon{width:13px;height:13px;stroke:var(--dimmer);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.card-text{font-family:'Inter',sans-serif;font-size:13px;color:var(--dim)}
+.card-text.cel{font-family:'Inter',sans-serif;letter-spacing:.04em}
+.card-meta{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:500}
+.tag.primeira{background:rgba(217,58,58,.15);color:var(--rb);border:1px solid rgba(217,58,58,.25)}
+.tag.retorno{background:rgba(76,175,80,.1);color:var(--green-l);border:1px solid rgba(76,175,80,.2)}
+.tag.hora{background:rgba(255,255,255,.05);color:var(--dimmer);border:1px solid var(--border)}
+
+/* WHATSAPP BUTTONS */
+.card-actions{border-top:1px solid var(--border);display:flex;gap:0}
+.wa-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;transition:background .2s;text-decoration:none;color:var(--dim)}
+.wa-btn:first-child{border-right:1px solid var(--border)}
+.wa-btn:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.wa-btn .wa-icon{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+.wa-btn.msg1:hover{background:rgba(37,211,102,.07);color:#25d366}
+.wa-btn.msg2:hover{background:rgba(37,211,102,.07);color:#25d366}
+.wa-btn.no-cel{opacity:.3;cursor:not-allowed;pointer-events:none}
+
+/* EMPTY / LOADING */
+.empty-state{text-align:center;padding:60px 20px}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:.3}
+.empty-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:var(--dim);margin-bottom:8px}
+.empty-text{font-family:'Crimson Pro',serif;font-style:italic;font-size:16px;color:var(--dimmer)}
+.loading-bar{height:2px;background:var(--border);position:relative;overflow:hidden;margin:0}
+.loading-bar::after{content:'';position:absolute;inset:0;background:var(--rb);animation:load-slide 1.2s ease-in-out infinite;transform-origin:left}
+@keyframes load-slide{0%{transform:scaleX(0) translateX(0)}50%{transform:scaleX(.7) translateX(30%)}100%{transform:scaleX(0) translateX(200%)}}</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-logo">DNA</div>
+  <div class="gate-sub">Painel Administrativo</div>
+  <div class="gate-label">Senha de acesso</div>
+  <input type="password" class="gate-input" id="gate-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
+  <div class="gate-err" id="gate-err"></div>
+  <button class="gate-btn" onclick="checkPassword()">Entrar</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="loading-bar" id="loading-bar" style="display:none"></div>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">DNA</div>
+      <div class="header-title">Painel de Visitantes</div>
+    </div>
+    <div class="header-right">
+      <button class="btn-refresh" onclick="loadVisitors()">↻ Atualizar</button>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val red" id="st-hoje">—</div><div class="stat-label">Hoje</div></div>
+    <div class="stat"><div class="stat-val" id="st-total">—</div><div class="stat-label">Total Geral</div></div>
+    <div class="stat"><div class="stat-val green" id="st-1a">—</div><div class="stat-label">1ª Visita Hoje</div></div>
+  </div>
+
+  <div class="filters">
+    <span class="filter-label">Filtrar:</span>
+    <input type="date" class="filter-input" id="filter-date" onchange="applyFilters()">
+    <div class="filter-tag">
+      <button class="ftag" id="ftag-all" onclick="setTagFilter('all')">Todos</button>
+      <button class="ftag" id="ftag-1a" onclick="setTagFilter('primeira')">1ª Visita</button>
+      <button class="ftag" id="ftag-ret" onclick="setTagFilter('retorno')">Retorno</button>
+    </div>
+    <button class="filter-clear" onclick="clearFilters()">Limpar</button>
+  </div>
+
+  <div class="content" id="content">
+    <div class="empty-state">
+      <div class="empty-icon">🌱</div>
+      <div class="empty-title">Carregando visitantes...</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyC46bONBdDeVbK4e7E_zIgveEokleOpKa4",
+  authDomain:"dna-terra-fertil.firebaseapp.com",
+  projectId:"dna-terra-fertil",
+  storageBucket:"dna-terra-fertil.firebasestorage.app",
+  messagingSenderId:"937958327076",
+  appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"
+}));
+
+const SENHA = 'dna2025'; // ← Mude aqui para alterar a senha
+let allVisitors = [];
+let tagFilter = 'all';
+
+/* PASSWORD */
+window.checkPassword = function() {
+  const val = document.getElementById('gate-input').value;
+  const err = document.getElementById('gate-err');
+  if (val === SENHA) {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    loadVisitors();
+  } else {
+    err.textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('gate-input').value = '';
+    document.getElementById('gate-input').focus();
+  }
+};
+window.logout = function() {
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('gate').classList.remove('hidden');
+  document.getElementById('gate-input').value = '';
+  document.getElementById('gate-err').textContent = '';
+};
+
+/* LOAD VISITORS */
+window.loadVisitors = async function() {
+  const bar = document.getElementById('loading-bar');
+  bar.style.display = 'block';
+  try {
+    const q = query(collection(db,'visitantes'), orderBy('timestamp','desc'));
+    const snap = await getDocs(q);
+    allVisitors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    applyFilters();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('content').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-text">Verifique as regras do Firestore e a conexão.</div></div>`;
+  }
+  bar.style.display = 'none';
+};
+
+function todayStr() {
+  return new Date().toLocaleDateString('pt-BR');
+}
+
+function updateStats() {
+  const todayDate = todayStr();
+  const hoje = allVisitors.filter(v => v.culto && v.culto.includes(todayDate.split('/').slice(0,2).join('/')));
+  // use date field for today's comparison (by day/month)
+  const dm = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const hojeList = allVisitors.filter(v => v.culto && v.culto.includes(dm));
+  document.getElementById('st-hoje').textContent = hojeList.length;
+  document.getElementById('st-total').textContent = allVisitors.length;
+  document.getElementById('st-1a').textContent = hojeList.filter(v => v.primeiraVez).length;
+}
+
+/* FILTERS */
+window.applyFilters = function() {
+  const dateVal = document.getElementById('filter-date').value;
+  let filtered = [...allVisitors];
+  if (dateVal) {
+    const [y,m,d] = dateVal.split('-');
+    const str = `${d}/${m}`;
+    filtered = filtered.filter(v => v.culto && v.culto.includes(str));
+  }
+  if (tagFilter === 'primeira') filtered = filtered.filter(v => v.primeiraVez);
+  if (tagFilter === 'retorno')  filtered = filtered.filter(v => !v.primeiraVez);
+  renderVisitors(filtered);
+};
+
+window.setTagFilter = function(tag) {
+  tagFilter = tag;
+  document.getElementById('ftag-all').classList.toggle('active', tag==='all');
+  document.getElementById('ftag-1a').classList.toggle('active', tag==='primeira');
+  document.getElementById('ftag-ret').classList.toggle('active', tag==='retorno');
+  applyFilters();
+};
+window.clearFilters = function() {
+  document.getElementById('filter-date').value = '';
+  tagFilter = 'all';
+  ['ftag-all','ftag-1a','ftag-ret'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('ftag-all').classList.add('active');
+  applyFilters();
+};
+setTagFilter('all');
+
+/* RENDER */
+function renderVisitors(list) {
+  const cont = document.getElementById('content');
+  if (!list.length) {
+    cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">Nenhum visitante encontrado</div><div class="empty-text">Tente mudar o filtro ou aguarde novos cadastros.</div></div>`;
+    return;
+  }
+
+  // group by culto day
+  const groups = {};
+  list.forEach(v => {
+    const key = v.culto || 'Sem data';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(v);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([day, visitors]) => {
+    html += `<div class="day-group">
+      <div class="day-header">
+        ${day.charAt(0).toUpperCase()+day.slice(1)}
+        <span class="day-count">${visitors.length} visitante${visitors.length!==1?'s':''}</span>
+      </div>`;
+    visitors.forEach(v => { html += buildCard(v); });
+    html += `</div>`;
+  });
+  cont.innerHTML = html;
+}
+
+function initials(nome) {
+  const parts = nome.trim().split(' ').filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+  return parts[0].slice(0,2).toUpperCase();
+}
+
+function waLink(cel, msg) {
+  if (!cel) return '#';
+  const digits = cel.replace(/\D/g,'');
+  const num = '55' + digits;
+  return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+}
+
+function msg1(nome) {
+  return `Olá, ${nome.split(' ')[0]}! 😊
+
+Que alegria enorme ter você conosco hoje na *Terra Fértil*! 🌱
+
+Esperamos que cada momento tenha tocado o seu coração. Você não é apenas uma visita — você já faz parte da nossa família.
+
+Se tiver qualquer dúvida ou quiser saber mais sobre a nossa igreja, estamos aqui com o coração aberto! 🙏
+
+Com muito carinho,
+*Família Terra Fértil* ❤️`;
+}
+
+function msg2(nome) {
+  return `Olá, ${nome.split(' ')[0]}! 🌱
+
+Ainda estamos com o coração quentinho lembrando da sua presença na *Terra Fértil*! Foi uma honra ter você com a gente. 🙏
+
+Queremos muito te ver de novo! Nossos cultos acontecem:
+📅 *Terça-feira* às 20h
+📅 *Domingo* às 19h
+
+Há sempre um lugar especial reservado para você. Conta com a nossa família! ❤️
+
+Com muito amor,
+*Família Terra Fértil* 🌱`;
+}
+
+function buildCard(v) {
+  const ini = initials(v.nome || '?');
+  const hasCel = v.celular && v.celular.length > 0;
+  const link1 = hasCel ? waLink(v.celular, msg1(v.nome)) : '#';
+  const link2 = hasCel ? waLink(v.celular, msg2(v.nome)) : '#';
+  const noCelClass = hasCel ? '' : 'no-cel';
+  const waIcon = `<svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
+
+  return `<div class="visitor-card">
+    <div class="card-top">
+      <div class="avatar">${ini}</div>
+      <div class="card-info">
+        <div class="card-name">${v.nome || '—'}</div>
+        ${v.celular ? `<div class="card-row">
+          <svg class="card-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.24 16.92z"/></svg>
+          <span class="card-text cel">${v.celular}</span>
+        </div>` : ''}
+        ${v.endereco ? `<div class="card-row">
+          <svg class="card-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="card-text">${v.endereco}</span>
+        </div>` : ''}
+        <div class="card-meta">
+          <span class="tag ${v.primeiraVez ? 'primeira' : 'retorno'}">${v.primeiraVez ? '1ª Visita' : 'Retorno'}</span>
+          ${v.horario ? `<span class="tag hora">${v.horario}</span>` : ''}
+          ${!hasCel ? `<span class="tag hora" style="color:rgba(255,100,100,.6)">Sem celular</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="card-actions">
+      <a class="wa-btn msg1 ${noCelClass}" href="${link1}" target="_blank" rel="noopener">
+        ${waIcon} Boas-vindas
+      </a>
+      <a class="wa-btn msg2 ${noCelClass}" href="${link2}" target="_blank" rel="noopener">
+        ${waIcon} Follow-up 48h
+      </a>
+    </div>
+  </div>`;
+}
+
+// auto-refresh every 60s
+setInterval(window.loadVisitors, 60000);
+</script>
+</body>
+</html>
