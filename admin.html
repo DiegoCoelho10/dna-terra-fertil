@@ -610,12 +610,30 @@ window.addCasa = async function() {
 
 /* LONG PRESS */
 function attachLongPress(el,dur,cb){
-  let timer=null,bar=el.querySelector('.press-bar'),startTime,af;
+  let timer=null,bar=el.querySelector('.press-bar'),startTime,af,startX,startY,moved=false;
   function anim(){const p=Math.min((Date.now()-startTime)/dur*100,100);if(bar)bar.style.width=p+'%';if(p<100)af=requestAnimationFrame(anim);}
-  function start(e){e.preventDefault();el.classList.add('pressing');startTime=Date.now();if(bar){bar.style.transition='none';bar.style.width='0';}af=requestAnimationFrame(anim);timer=setTimeout(()=>{cancel();cb();},dur);}
+  function start(e){
+    // only start on direct card touch, not on buttons/links/textareas inside
+    if(e.target.tagName==='BUTTON'||e.target.tagName==='A'||e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+    moved=false;
+    startX=e.touches?e.touches[0].clientX:e.clientX;
+    startY=e.touches?e.touches[0].clientY:e.clientY;
+    el.classList.add('pressing');startTime=Date.now();
+    if(bar){bar.style.transition='none';bar.style.width='0';}
+    af=requestAnimationFrame(anim);
+    timer=setTimeout(()=>{if(!moved){cancel();cb();}},dur);
+  }
+  function move(e){
+    const dx=Math.abs((e.touches?e.touches[0].clientX:e.clientX)-startX);
+    const dy=Math.abs((e.touches?e.touches[0].clientY:e.clientY)-startY);
+    if(dx>8||dy>8){moved=true;cancel();}
+  }
   function cancel(){clearTimeout(timer);cancelAnimationFrame(af);el.classList.remove('pressing');if(bar)bar.style.width='0';}
-  el.addEventListener('mousedown',start);el.addEventListener('touchstart',start,{passive:false});
-  el.addEventListener('mouseup',cancel);el.addEventListener('mouseleave',cancel);el.addEventListener('touchend',cancel);el.addEventListener('touchcancel',cancel);
+  el.addEventListener('mousedown',start);
+  el.addEventListener('touchstart',start,{passive:true});
+  el.addEventListener('touchmove',move,{passive:true});
+  el.addEventListener('mouseup',cancel);el.addEventListener('mouseleave',cancel);
+  el.addEventListener('touchend',cancel);el.addEventListener('touchcancel',cancel);
 }
 
 /* MODAL */
