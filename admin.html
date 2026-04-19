@@ -341,7 +341,10 @@ async function loadAll() {
     updateStats();
     applyFilters();
     renderCasas();
-  } catch(e){ console.error(e); }
+  } catch(e){ 
+    console.error('[DNA] Firestore error:',e);
+    document.getElementById('content').innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-text">'+e.message+'</div></div>';
+  }
   setLoading(false);
 }
 function setLoading(s){ document.getElementById('loading-bar').style.display=s?'block':'none'; }
