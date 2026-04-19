@@ -472,7 +472,7 @@ function buildCard(v) {
   const sentBadge1=msg1Sent?`<span class="sent-badge">✓ enviado</span>`:'';
   const sentBadge2=msg2Sent?`<span class="sent-badge">✓ enviado</span>`:'';
 
-  return `<div class="visitor-card" data-id="${v.id}" data-nome="${(v.nome||'').replace(/"/g,'&quot;')}" data-idx="${globalIdx}">
+  return `<div class="visitor-card" data-id="${v.id}" data-nome="${(v.nome||'').replace(/"/g,'&quot;')}" data-idx="0">
     <div class="press-bar"></div>
     <div class="card-top">
       <div class="avatar">${ini}</div>
