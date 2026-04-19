@@ -328,15 +328,19 @@ async function plotAll(skipIgreja) {
         anchor: new google.maps.Point(18, 44)
       }
     });
-    marker.addListener('click', () => openCasaPanel(casa, c));
+    marker.addListener('click', () => {
+      casaCircles.forEach(ci => ci.setVisible(false));
+      circle.setVisible(true);
+      openCasaPanel(casa, c);
+    });
     casaMarkers.push(marker);
 
-    // Raio 2km
+    // Raio 2km - oculto por padrão, aparece só ao clicar
     const circle = new google.maps.Circle({
       map: gmap, center: c, radius: 1500,
-      strokeColor: '#D93A3A', strokeOpacity: 0.35, strokeWeight: 1,
-      fillColor: '#D93A3A', fillOpacity: 0.04,
-      strokeDasharray: [5,5]
+      strokeColor: '#D93A3A', strokeOpacity: 0.5, strokeWeight: 1.5,
+      fillColor: '#D93A3A', fillOpacity: 0.07,
+      visible: false
     });
     casaCircles.push(circle);
     await delay(80);
@@ -433,7 +437,7 @@ function openVisitantePanel(v, coords) {
 }
 
 function openPanel() { document.getElementById('panel').classList.add('open'); }
-window.closePanel = () => document.getElementById('panel').classList.remove('open');
+window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(c => c.setVisible(false)); };
   google.maps.event.addListener(gmap, 'click', () => window.closePanel());
 window.flyTo = (lat, lng) => { gmap.panTo({lat,lng}); gmap.setZoom(15); closePanel(); };
 
@@ -464,7 +468,7 @@ window.toggleLayer = function(type) {
   if (type === 'casas') {
     showCasas = !showCasas;
     casaMarkers.forEach(m => m.setVisible(showCasas));
-    casaCircles.forEach(c => c.setVisible(showCasas));
+    if(!showCasas) casaCircles.forEach(c => c.setVisible(false));
     document.getElementById('btn-casas').classList.toggle('off', !showCasas);
   } else {
     showVisit = !showVisit;
