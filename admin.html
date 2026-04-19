@@ -493,7 +493,7 @@ function buildCard(v) {
     ${casasHTML}
     <div class="card-notes">
       <button class="notes-toggle" onclick="toggleNote(this)">
-        <span class="arrow">▶</span> Anotações${v.notas?` <span style='color:var(--rb);font-size:9px'>● nota salva</span>`:''}
+        <span class="arrow">▶</span> Anotações${v.notas?' <span style="color:var(--rb);font-size:9px">● nota salva</span>':''}
       </button>
       <div class="notes-inner${v.notas?' open':''}">
         <textarea class="notes-ta" id="notes-${v.id}" placeholder="Registre observações sobre este visitante...">${v.notas||''}</textarea>
