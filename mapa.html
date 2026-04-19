@@ -329,18 +329,17 @@ async function plotAll(skipIgreja) {
       }
     });
     marker.addListener('click', () => {
-      casaCircles.forEach(ci => ci.setVisible(false));
-      circle.setVisible(true);
+      casaCircles.forEach(ci => ci.setMap(null));
+      circle.setMap(gmap);
       openCasaPanel(casa, c);
     });
     casaMarkers.push(marker);
 
     // Raio 2km - oculto por padrão, aparece só ao clicar
     const circle = new google.maps.Circle({
-      map: gmap, center: c, radius: 1500,
+      center: c, radius: 1500,
       strokeColor: '#D93A3A', strokeOpacity: 0.5, strokeWeight: 1.5,
-      fillColor: '#D93A3A', fillOpacity: 0.07,
-      visible: false
+      fillColor: '#D93A3A', fillOpacity: 0.07
     });
     casaCircles.push(circle);
     await delay(80);
@@ -437,7 +436,7 @@ function openVisitantePanel(v, coords) {
 }
 
 function openPanel() { document.getElementById('panel').classList.add('open'); }
-window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(c => c.setVisible(false)); };
+window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(c => c.setMap(null)); };
   google.maps.event.addListener(gmap, 'click', () => window.closePanel());
 window.flyTo = (lat, lng) => { gmap.panTo({lat,lng}); gmap.setZoom(15); closePanel(); };
 
@@ -468,7 +467,7 @@ window.toggleLayer = function(type) {
   if (type === 'casas') {
     showCasas = !showCasas;
     casaMarkers.forEach(m => m.setVisible(showCasas));
-    if(!showCasas) casaCircles.forEach(c => c.setVisible(false));
+    if(!showCasas) casaCircles.forEach(c => c.setMap(null));
     document.getElementById('btn-casas').classList.toggle('off', !showCasas);
   } else {
     showVisit = !showVisit;
