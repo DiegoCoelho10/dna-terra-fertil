@@ -132,7 +132,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .wa-btn.no-cel{opacity:.3;cursor:not-allowed;pointer-events:none}
 .wa-btn.sent{color:var(--green-l);opacity:.9}
 .wa-btn.sent:hover{background:rgba(76,175,80,.07);color:var(--green-l)}
-.sent-badge{font-size:9px;letter-spacing:.05em;color:var(--green-l);background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);padding:1px 5px;border-radius:10px;position:absolute;top:4px;right:5px}
+
 
 /* PREV/NEXT NAV */
 
@@ -469,8 +469,8 @@ function buildCard(v) {
   const link2=hasCel?`https://wa.me/55${digits}?text=${encodeURIComponent(msg2(v.nome))}`:'#';
 
   const casasHTML=casas.length?`<div class="casas-sugeridas show"><div class="casas-label">Casas próximas</div>${casas.map(c=>`<span class="casa-pill"><strong>${c.nome}</strong> · ${c.lider}${c.horario?' · '+c.horario:''}</span>`).join('')}</div>`:'';
-  const sentBadge1=msg1Sent?`<span class="sent-badge">✓ enviado</span>`:'';
-  const sentBadge2=msg2Sent?`<span class="sent-badge">✓ enviado</span>`:'';
+  const sentBadge1="";
+  const sentBadge2="";
 
   return `<div class="visitor-card" data-id="${v.id}" data-nome="${(v.nome||'').replace(/"/g,'&quot;')}" data-idx="0">
     <div class="press-bar"></div>
@@ -504,8 +504,8 @@ function buildCard(v) {
       </div>
     </div>
     <div class="card-actions">
-      <a class="wa-btn msg1 ${noCel} ${msg1Sent?'sent':''}" href="${link1}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg1')">${waIcon} Boas-vindas${sentBadge1}</a>
-      <a class="wa-btn msg2 ${noCel} ${msg2Sent?'sent':''}" href="${link2}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg2')">${waIcon} Follow-up${sentBadge2}</a>
+      <a class="wa-btn msg1 ${noCel} ${msg1Sent?'sent':''}" href="${link1}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg1')">${waIcon} Boas-vindas</a>
+      <a class="wa-btn msg2 ${noCel} ${msg2Sent?'sent':''}" href="${link2}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg2')">${waIcon} Follow-up</a>
     </div>
 
   </div>`;
@@ -546,7 +546,7 @@ window.markSent = async function(id, field) {
     const card=document.querySelector(`[data-id="${id}"]`);
     if(card){
       const btn=card.querySelector(`.wa-btn.${field}`);
-      if(btn){btn.classList.add('sent');if(!btn.querySelector('.sent-badge')){const s=document.createElement('span');s.className='sent-badge';s.textContent='✓ enviado';btn.appendChild(s);}}
+      if(btn){btn.classList.add('sent');if(!btn.querySelector('.sent-badge')){}}
     }
     updateStats();
   } catch(e){ console.error(e); }
