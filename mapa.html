@@ -329,19 +329,19 @@ async function plotAll(skipIgreja) {
       }
     });
     marker.addListener('click', () => {
-      casaCircles.forEach(ci => ci.setMap(null));
-      circle.setMap(gmap);
+      // Destroy all existing circles
+      casaCircles.forEach(ci => { ci.setMap(null); });
+      casaCircles.length = 0;
+      // Create fresh circle only for this casa
+      const activeCircle = new google.maps.Circle({
+        map: gmap, center: c, radius: 1500,
+        strokeColor: '#D93A3A', strokeOpacity: 0.5, strokeWeight: 1.5,
+        fillColor: '#D93A3A', fillOpacity: 0.07
+      });
+      casaCircles.push(activeCircle);
       openCasaPanel(casa, c);
     });
     casaMarkers.push(marker);
-
-    // Raio 2km - oculto por padrão, aparece só ao clicar
-    const circle = new google.maps.Circle({
-      center: c, radius: 1500,
-      strokeColor: '#D93A3A', strokeOpacity: 0.5, strokeWeight: 1.5,
-      fillColor: '#D93A3A', fillOpacity: 0.07
-    });
-    casaCircles.push(circle);
     await delay(80);
   }
   document.getElementById('lc').textContent = cOk;
@@ -436,7 +436,7 @@ function openVisitantePanel(v, coords) {
 }
 
 function openPanel() { document.getElementById('panel').classList.add('open'); }
-window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(c => c.setMap(null)); };
+window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(ci => ci.setMap(null)); casaCircles.length = 0; };
   google.maps.event.addListener(gmap, 'click', () => window.closePanel());
 window.flyTo = (lat, lng) => { gmap.panTo({lat,lng}); gmap.setZoom(15); closePanel(); };
 
