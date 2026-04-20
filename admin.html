@@ -220,6 +220,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
   <div class="tabs">
     <button class="tab active" id="t-visitantes" onclick="switchTab('visitantes')">Visitantes</button>
     <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas Sacerdotais</button>
+    <button class="tab" id="t-feed" onclick="switchTab('feed')">📸 Feed</button>
   </div>
 
   <div id="tab-visitantes">
@@ -264,6 +265,41 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
     <div id="casas-list">
       <div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">Nenhuma casa cadastrada</div></div>
     </div>
+  </div>
+</div>
+
+<!-- FEED TAB -->
+<div id="tab-feed" style="display:none;padding:16px;max-width:600px;margin:0 auto">
+  <div class="casas-form">
+    <div class="casas-form-title">📸 Nova Publicação</div>
+    <div id="feed-preview-wrap" style="display:none;margin-bottom:12px">
+      <img id="feed-img-preview" style="width:100%;max-height:300px;object-fit:cover;display:block;margin-bottom:8px" alt="preview">
+      <button onclick="removerFoto()" style="background:rgba(217,58,58,.2);border:1px solid rgba(217,58,58,.3);color:var(--rb);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;cursor:pointer;-webkit-appearance:none">✕ Remover foto</button>
+    </div>
+    <div id="feed-upload-area" style="background:rgba(255,255,255,.03);border:2px dashed rgba(217,58,58,.25);padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative;transition:border-color .2s" onclick="document.getElementById('feed-file-input').click()">
+      <input type="file" id="feed-file-input" accept="image/*" capture="environment" style="display:none" onchange="previewFoto(event)">
+      <div style="font-size:32px;margin-bottom:8px">📷</div>
+      <div style="font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim)">Toque para adicionar foto do culto</div>
+      <div style="font-size:10px;color:var(--dimmer);margin-top:5px;letter-spacing:.15em;text-transform:uppercase">JPG ou PNG</div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="c-label">Legenda</label>
+      <textarea id="feed-caption" class="c-input" rows="3" placeholder="Conta como foi o culto hoje..." style="resize:none;min-height:80px"></textarea>
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="c-label">Culto</label>
+      <input type="text" class="c-input" id="feed-culto" placeholder="Ex: Domingo — Culto da Família">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="c-label">Pessoas acolhidas hoje</label>
+      <input type="number" class="c-input" id="feed-cadastros" placeholder="0" min="0">
+    </div>
+    <button class="btn-add" id="btn-publicar" onclick="publicarPost()" style="width:100%;margin-top:0">📤 Publicar no Feed</button>
+  </div>
+
+  <div id="feed-posts-list">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;color:var(--dim);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">Publicações</div>
+    <div id="feed-list-content"><div class="empty-state"><div class="empty-icon">📸</div><div class="empty-title">Nenhuma publicação ainda</div></div></div>
   </div>
 </div>
 
@@ -327,9 +363,12 @@ window.switchTab = function(tab) {
   currentTab=tab;
   document.getElementById('tab-visitantes').style.display=tab==='visitantes'?'block':'none';
   document.getElementById('tab-casas').classList.toggle('active',tab==='casas');
+  document.getElementById('tab-feed').style.display=tab==='feed'?'block':'none';
   document.getElementById('t-visitantes').classList.toggle('active',tab==='visitantes');
   document.getElementById('t-casas').classList.toggle('active',tab==='casas');
+  document.getElementById('t-feed').classList.toggle('active',tab==='feed');
   document.getElementById('btn-refresh').style.display=tab==='visitantes'?'inline-flex':'none';
+  if(tab==='feed') loadFeedPosts();
 };
 document.getElementById('tab-visitantes').style.display='block';
 window.refresh = ()=>loadAll();
@@ -666,6 +705,91 @@ document.getElementById('modal-confirm-btn').onclick=async function(){
   window.closeModal();
 };
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)window.closeModal();});
+
+/* ── FEED ── */
+let feedImgBase64 = null;
+
+window.previewFoto = function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    feedImgBase64 = ev.target.result;
+    document.getElementById('feed-img-preview').src = feedImgBase64;
+    document.getElementById('feed-preview-wrap').style.display = 'block';
+    document.getElementById('feed-upload-area').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removerFoto = function() {
+  feedImgBase64 = null;
+  document.getElementById('feed-img-preview').src = '';
+  document.getElementById('feed-preview-wrap').style.display = 'none';
+  document.getElementById('feed-upload-area').style.display = 'block';
+  document.getElementById('feed-file-input').value = '';
+};
+
+window.publicarPost = async function() {
+  const caption = document.getElementById('feed-caption').value.trim();
+  const culto = document.getElementById('feed-culto').value.trim();
+  const cadastros = parseInt(document.getElementById('feed-cadastros').value)||0;
+  const btn = document.getElementById('btn-publicar');
+  btn.disabled=true; btn.textContent='Publicando...';
+  try {
+    await addDoc(collection(db,'feed_posts'),{
+      caption: caption||null,
+      culto: culto||new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}),
+      cadastros,
+      imageUrl: feedImgBase64||null,
+      likes:[],
+      comments:[],
+      timestamp:serverTimestamp()
+    });
+    document.getElementById('feed-caption').value='';
+    document.getElementById('feed-culto').value='';
+    document.getElementById('feed-cadastros').value='';
+    window.removerFoto();
+    showToast('Publicado com sucesso!');
+    loadFeedPosts();
+  } catch(e){ console.error(e); showToast('Erro ao publicar.'); }
+  btn.disabled=false; btn.textContent='📤 Publicar no Feed';
+};
+
+async function loadFeedPosts() {
+  try {
+    const snap = await getDocs(query(collection(db,'feed_posts'),orderBy('timestamp','desc')));
+    const cont = document.getElementById('feed-list-content');
+    if (!snap.docs.length) {
+      cont.innerHTML='<div class="empty-state"><div class="empty-icon">📸</div><div class="empty-title">Nenhuma publicação ainda</div></div>';
+      return;
+    }
+    cont.innerHTML = snap.docs.map(d => {
+      const p = {id:d.id,...d.data()};
+      const dt = p.timestamp?.seconds ? new Date(p.timestamp.seconds*1000).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
+      return `<div class="casa-card" style="margin-bottom:10px">
+        <div style="flex:1;min-width:0">
+          <div class="casa-nome">${p.culto||'Culto'}</div>
+          <div class="casa-lider">${dt}${p.cadastros?' · '+p.cadastros+' pessoas':''}</div>
+          ${p.caption?`<div class="casa-end" style="margin-top:4px">${p.caption.slice(0,80)}${p.caption.length>80?'...':''}</div>`:''}
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;color:var(--dimmer)">
+            <span>❤️ ${(p.likes||[]).length}</span>
+            <span>💬 ${(p.comments||[]).length}</span>
+          </div>
+        </div>
+        ${p.imageUrl?`<img src="${p.imageUrl}" style="width:56px;height:56px;object-fit:cover;flex-shrink:0;border-radius:2px" alt="">`:''}
+      </div>`;
+    }).join('');
+  } catch(e){ console.error(e); }
+}
+
+function showToast(msg){ 
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f0f0f;border:1px solid rgba(217,58,58,.35);border-left:3px solid #D93A3A;color:#fff;font-family:Crimson Pro,serif;font-style:italic;font-size:14px;padding:11px 18px;z-index:9000;max-width:300px;text-align:center';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
 setInterval(loadAll,60000);
 </script>
 <script>
