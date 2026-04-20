@@ -277,7 +277,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
       <button onclick="removerFoto()" style="background:rgba(217,58,58,.2);border:1px solid rgba(217,58,58,.3);color:var(--rb);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;cursor:pointer;-webkit-appearance:none">✕ Remover foto</button>
     </div>
     <div id="feed-upload-area" style="background:rgba(255,255,255,.03);border:2px dashed rgba(217,58,58,.25);padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative;transition:border-color .2s" onclick="document.getElementById('feed-file-input').click()">
-      <input type="file" id="feed-file-input" accept="image/*" capture="environment" style="display:none" onchange="previewFoto(event)">
+      <input type="file" id="feed-file-input" accept="image/*" style="display:none" onchange="previewFoto(event)">
       <div style="font-size:32px;margin-bottom:8px">📷</div>
       <div style="font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--dim)">Toque para adicionar foto do culto</div>
       <div style="font-size:10px;color:var(--dimmer);margin-top:5px;letter-spacing:.15em;text-transform:uppercase">JPG ou PNG</div>
