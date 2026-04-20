@@ -365,7 +365,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="dna-logo">DNA</div>
   <div class="welcome-sub">Terra Fértil</div>
   <div class="encorajamento" id="frase-enc"></div>
-  <button class="btn-primary" onclick="if(window.somExperience)window.somExperience();goScene(1)">Iniciar DNA Experience</button>
+  <button class="btn-primary" onclick="if(window.somExperience)window.somExperience();goScene(2)">Iniciar DNA Experience</button>
   <div class="team-badge">DNA Team · Recepção e Acolhimento</div>
   <a href="feed.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:Inter,sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:8px 16px;text-decoration:none;transition:all .2s;border-radius:2px;z-index:1">📸 Ver Feed</a>
   <div class="contador-vivo" id="contador-welcome"></div>
@@ -529,7 +529,7 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById('s-auth').style.display = 'none';
     // Se ainda está na tela de auth, vai para welcome
     if (document.querySelector('.screen.active')?.id === 's-auth') {
-      showScreen(screens.indexOf('s-welcome'));
+      showScreen(1); // go to welcome, skip auth
     }
   } else {
     // Não logado — mostrar auth
@@ -724,7 +724,7 @@ document.getElementById('s-form').insertBefore(buildHelixSVG(), document.getElem
 
 /* ── SCREENS ── */
 const screens=['s-auth','s-welcome','s-s1','s-s2','s-s3','s-s4','s-impact','s-form'];
-let current=0;
+let current=1;
 const dotsEl=document.getElementById('dots');
 const navBtn=document.getElementById('nav-btn');
 const skipBtn=document.getElementById('skip-btn');
@@ -735,22 +735,23 @@ function showScreen(idx){
   document.getElementById(screens[current]).classList.remove('active');
   document.getElementById(screens[idx]).classList.add('active');
   current=idx;updateChrome();
-  if(idx===3)animatePillars();
-  if(idx===5)animateImpact();
+  if(idx===4)animatePillars();
+  if(idx===6)animateImpact();
 }
 function updateChrome(){
-  const inScene=current>=1&&current<=4,inImpact=current===5;
+  // screens: 0=auth, 1=welcome, 2-5=scenes, 6=impact, 7=form
+  const inScene=current>=2&&current<=5, inImpact=current===6;
   dotsEl.style.display=(inScene||inImpact)?'flex':'none';
-  if(inScene||inImpact)document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current-1));
+  if(inScene||inImpact)document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current-2));
   navBtn.classList.toggle('visible',inScene);
   skipBtn.classList.toggle('visible',inScene);
-  backBtn.classList.toggle('visible',current>=1&&current<=5);
+  backBtn.classList.toggle('visible',current>=2&&current<=6);
 }
 window.goScene=n=>showScreen(n);
-window.nextScene=()=>{if(current<6)showScreen(current+1)};
-window.prevScene=()=>{if(current>0)showScreen(current-1)};
-window.skipToImpact=()=>showScreen(5);
-window.goForm=()=>{if(window.somCadastro)window.somCadastro();showScreen(6);};
+window.nextScene=()=>{if(current<7)showScreen(current+1)};
+window.prevScene=()=>{if(current>1)showScreen(current-1)};
+window.skipToImpact=()=>showScreen(6);
+window.goForm=()=>{if(window.somCadastro)window.somCadastro();showScreen(7);};
 
 /* s3 header */
 function fireS3Header(){
