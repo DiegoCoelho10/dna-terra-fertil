@@ -287,35 +287,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 }
 
 /* ── AUTH SCREEN ── */
-#s-auth{background:radial-gradient(ellipse 80% 60% at 50% 42%,#1a0505 0%,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:0}
-.auth-logo{width:clamp(60px,16vw,80px);height:auto;opacity:.85;margin-bottom:8px}
-.auth-dna{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,12vw,72px);letter-spacing:.15em;color:var(--w);line-height:1;position:relative}
-.auth-dna::after{content:'DNA';position:absolute;inset:0;color:var(--rb);filter:blur(24px);opacity:.2}
-.auth-sub{font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-bottom:28px}
-.auth-tabs{display:flex;border-bottom:1px solid var(--border);width:min(320px,90vw);margin-bottom:20px}
-.auth-tab{flex:1;padding:10px;text-align:center;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--dimmer);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;-webkit-appearance:none}
-.auth-tab.active{color:var(--w);border-bottom-color:var(--rb)}
-.auth-form{width:min(320px,90vw);display:flex;flex-direction:column;gap:12px}
-.auth-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-bottom-color:rgba(255,255,255,.28);color:var(--w);font-family:'Inter',sans-serif;font-size:15px;padding:13px 14px;outline:none;width:100%;border-radius:0;-webkit-appearance:none;transition:border-color .2s}
-.auth-input:focus{border-bottom-color:var(--rb)}
-.auth-input::placeholder{color:rgba(255,255,255,.2)}
-.auth-btn{background:var(--red);color:var(--w);border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:15px;cursor:pointer;transition:background .2s;min-height:50px;width:100%;margin-top:4px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);-webkit-appearance:none}
-.auth-btn:hover{background:#a01e1e}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed}
-.auth-divider{display:flex;align-items:center;gap:10px;color:var(--dimmer);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.auth-google-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:var(--w);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:13px;cursor:pointer;transition:all .2s;min-height:50px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-appearance:none}
-.auth-google-btn:hover{background:rgba(255,255,255,.12)}
-.auth-google-icon{width:18px;height:18px}
-.auth-forgot{background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;padding:4px;text-align:center;width:100%;transition:color .2s;-webkit-appearance:none}
-.auth-forgot:hover{color:var(--w)}
-.auth-err{color:rgba(255,120,120,.9);font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;text-align:center;min-height:18px}
-.auth-success-msg{color:rgba(76,175,80,.9);font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;text-align:center}
-</style>
-</head>
-<body>
-
-<div id="toast"><span id="toast-msg"></span><button id="toast-close" onclick="hideToast()">×</button></div>
 
 <!-- WELCOME -->
 <!-- AUTH SCREEN -->
@@ -503,7 +474,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, setDoc, getDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const app = initializeApp({
@@ -521,23 +492,92 @@ const googleProvider = new GoogleAuthProvider();
 document.getElementById('fb-dot').classList.add('ok');
 setTimeout(()=>document.getElementById('fb-status').style.opacity='0',4000);
 
+// ── NAV DINÂMICA POR PAPEL ──
+const _NAV=[
+  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
+  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
+  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
+  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
+  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
+];
+function buildNav(papel) {
+  const nav=document.getElementById('dna-nav');
+  if(!nav) return;
+  nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>
+    `<a href="${n.p}" class="dna-ni${n.p==='index.html'?' on':''}">`+
+    `<span>${n.i}</span><span>${n.l}</span></a>`
+  ).join('');
+  nav.classList.add('show');
+}
+
 // ── AUTH STATE ──
-onAuthStateChanged(auth, (user) => {
+document.getElementById('s-auth').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px"><div style="width:32px;height:32px;border:2px solid rgba(217,58,58,.3);border-top-color:#D93A3A;border-radius:50%;animation:spin .8s linear infinite"></div><div style="font-family:Crimson Pro,serif;font-style:italic;color:rgba(255,255,255,.4);font-size:14px">Verificando acesso...</div></div>';
+document.getElementById('s-auth').style.cssText = 'display:flex;align-items:center;justify-content:center;background:#080808';
+
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     window._currentUser = user;
-    // Já logado — esconde auth e vai direto para welcome
-    document.getElementById('s-auth').style.display = 'none';
-    document.getElementById('s-auth').classList.remove('active');
-    if (!document.querySelector('.screen.active') || document.querySelector('.screen.active')?.id === 's-auth') {
+    // Buscar papel do usuário
+    try {
+      const snap = await getDoc(doc(db,'usuarios',user.uid));
+      if (snap.exists()) {
+        const dados = snap.data();
+        if (dados.status === 'pendente') {
+          // Aguardando aprovação
+          document.getElementById('s-auth').style.cssText = '';
+          document.getElementById('s-auth').innerHTML = '';
+          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+          document.getElementById('s-auth').classList.add('active');
+          document.getElementById('s-auth').innerHTML = `
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:#fff;margin-bottom:12px">Cadastro em análise</div>
+            <div style="font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:rgba(255,255,255,.55);text-align:center;max-width:280px;line-height:1.7">Seu pedido de acesso foi enviado ao administrador. Aguarde a aprovação para continuar.</div>
+            <button onclick="signOut(auth).then(()=>location.reload())" style="margin-top:24px;background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:10px 20px;cursor:pointer">Sair</button>`;
+          document.getElementById('s-auth').style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#080808';
+          return;
+        }
+        if (dados.status === 'rejeitado') {
+          await signOut(auth);
+          mostrarLogin('Acesso negado pelo administrador.');
+          return;
+        }
+        window._papel = dados.papel || 'voluntario';
+        buildNav(window._papel);
+      } else {
+        // Primeiro acesso — criar registro pendente
+        await setDoc(doc(db,'usuarios',user.uid), {
+          uid: user.uid,
+          email: user.email,
+          nome: user.displayName || user.email.split('@')[0],
+          papel: 'voluntario',
+          status: 'pendente',
+          criadoEm: serverTimestamp()
+        });
+        // Mostrar pendente
+        onAuthStateChanged(auth, async (u) => { if(u) location.reload(); });
+        return;
+      }
+    } catch(e) { console.error(e); }
+    
+    const active = document.querySelector('.screen.active');
+    if (!active || active.id === 's-auth') {
       showScreen(1);
     }
   } else {
-    window._currentUser = null;
-    document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display=''; });
-    document.getElementById('s-auth').style.display = 'flex';
-    document.getElementById('s-auth').classList.add('active');
+    mostrarLogin();
   }
 });
+
+function mostrarLogin(erro) {
+  window._currentUser = null;
+  document.getElementById('s-auth').style.cssText = '';
+  document.getElementById('s-auth').innerHTML = '';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-auth').classList.add('active');
+  if(erro) {
+    const el = document.getElementById('login-err');
+    if(el) { el.textContent = erro; el.style.color='rgba(255,120,120,.9)'; }
+  }
+}
 
 // ── AUTH FUNCTIONS ──
 window.authTab = function(tab) {
@@ -579,6 +619,12 @@ window.criarConta = async function() {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, senha);
     await updateProfile(cred.user, { displayName: nome });
+    // Salvar no Firestore como pendente
+    await setDoc(doc(db,'usuarios',cred.user.uid), {
+      uid: cred.user.uid, email, nome,
+      papel: 'voluntario', status: 'pendente',
+      criadoEm: serverTimestamp()
+    });
   } catch(e) {
     err.textContent = traduzirErroAuth(e.code);
     btn.disabled=false; btn.textContent='Criar conta';
@@ -1183,5 +1229,7 @@ window.setToggle = function(val) {
 window._primeiraVez = true; // default
 
 </script>
+
+<nav id="dna-nav"></nav>
 </body>
 </html>
