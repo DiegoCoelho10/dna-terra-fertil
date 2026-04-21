@@ -49,6 +49,13 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .btn-sm:hover{background:rgba(255,255,255,.1);color:var(--w)}
 .btn-logout{background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:10px;cursor:pointer;padding:7px;min-height:34px}
 .btn-logout:hover{color:var(--w)}
+/* DNA BOTTOM NAV */
+#dna-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);border-top:1px solid rgba(255,255,255,.08);display:none;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:9000}
+#dna-nav.show{display:flex}
+.dna-ni{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.3);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;min-width:52px;border:none;background:none;cursor:pointer;-webkit-appearance:none;transition:color .15s}
+.dna-ni:hover,.dna-ni.on{color:#D93A3A}
+.dna-ni span:first-child{font-size:19px;line-height:1}
+@keyframes dna-spin{to{transform:rotate(360deg)}}
 
 /* BOTTOM NAV */
 .bottom-nav{background:rgba(8,8,8,.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + var(--sab));flex-shrink:0;z-index:200}
@@ -284,7 +291,8 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 
   <div class="tabs">
     <button class="tab active" id="t-visitantes" onclick="switchTab('visitantes')">Visitantes</button>
-    <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas Sacerdotais</button>
+    <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas</button>
+    <button class="tab" id="t-usuarios" onclick="switchTab('usuarios')">👥 Usuários</button>
     <button class="tab" id="t-feed" onclick="switchTab('feed')">📸 Feed</button>
   </div>
 
@@ -332,19 +340,27 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
       <div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">Nenhuma casa cadastrada</div></div>
     </div>
   </div>
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <a href="index.html" class="nav-item"><span class="nav-icon">🌱</span>Voluntário</a>
-    <button class="nav-item active" onclick=""><span class="nav-icon">⚙️</span>Admin</button>
-    <a href="lider.html" class="nav-item"><span class="nav-icon">🏠</span>Líder</a>
-    <a href="mapa.html" class="nav-item"><span class="nav-icon">🗺️</span>Mapa</a>
-    <a href="feed.html" class="nav-item"><span class="nav-icon">📸</span>Feed</a>
-  </nav>
 
+  <nav id="dna-nav"></nav>
+</div>
+
+
+<!-- TAB USUÁRIOS -->
+<div id="tab-usuarios" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:80px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;color:var(--dim)">Gestão de Usuários</div>
+    <button onclick="loadUsuarios()" style="background:none;border:1px solid var(--border);color:var(--dimmer);font-family:Inter,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;cursor:pointer">↻ Atualizar</button>
+  </div>
+  <!-- Pendentes -->
+  <div style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--rb);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(217,58,58,.2)">⏳ Aguardando Aprovação</div>
+  <div id="list-pendentes"><div style="color:var(--dimmer);font-family:Crimson Pro,serif;font-style:italic;font-size:13px;padding:8px 0">Carregando...</div></div>
+  <!-- Aprovados -->
+  <div style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(76,175,80,.8);margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(76,175,80,.15)">✅ Usuários Ativos</div>
+  <div id="list-aprovados"><div style="color:var(--dimmer);font-family:Crimson Pro,serif;font-style:italic;font-size:13px;padding:8px 0">Carregando...</div></div>
 </div>
 
 <!-- FEED TAB -->
-<div id="tab-feed" style="display:none;padding:16px;max-width:600px;margin:0 auto">
+<div id="tab-feed" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;max-width:600px;margin:0 auto;padding-bottom:80px">
   <div class="casas-form">
     <div class="casas-form-title">📸 Nova Publicação</div>
     <div id="feed-preview-wrap" style="display:none;margin-bottom:12px">
@@ -396,7 +412,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, getDoc, setDoc, query, orderBy, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const app = initializeApp({
@@ -413,33 +429,67 @@ const googleProvider = new GoogleAuthProvider();
 
 let allVisitors=[], allCasas=[], filteredVisitors=[], tagFilter='all', currentTab='visitantes';
 
-/* ── AUTH ── */
-// ── EMAILS AUTORIZADOS NO ADMIN ──
-const ADMINS_AUTORIZADOS = [
-  'dsdiegocoelho@gmail.com',
-  // adicione mais emails aqui conforme necessário
+// ── NAV DINÂMICA ──
+const _NAV=[
+  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
+  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
+  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
+  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
+  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
 ];
+function _buildNav(papel, active) {
+  const nav=document.getElementById('dna-nav');
+  if(!nav) return;
+  nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>
+    `<a href="${n.p}" class="dna-ni${n.p===active?' on':''}">`+
+    `<span>${n.i}</span><span>${n.l}</span></a>`
+  ).join('');
+  nav.classList.add('show');
+}
 
+/* ── AUTH ── */
+// ── AUTH ADMIN COM FIRESTORE ──
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const email = user.email || '';
-    if (ADMINS_AUTORIZADOS.includes(email.toLowerCase())) {
-      // Acesso autorizado
+    try {
+      let snap = await getDoc(doc(db,'usuarios',user.uid));
+      if (!snap.exists()) {
+        // Primeiro acesso - criar como pendente
+        await setDoc(doc(db,'usuarios',user.uid), {
+          uid:user.uid, email:user.email,
+          nome:user.displayName||user.email.split('@')[0],
+          papel:'voluntario', status:'pendente', criadoEm:serverTimestamp()
+        });
+        snap = await getDoc(doc(db,'usuarios',user.uid));
+      }
+      const dados = snap.data();
+      if (dados.papel !== 'admin') {
+        await signOut(auth);
+        document.getElementById('gate-err').style.color='rgba(255,120,120,.9)';
+        document.getElementById('gate-err').textContent='⛔ Acesso restrito ao painel administrativo.';
+        document.getElementById('gate-input').value='';
+        return;
+      }
+      if (dados.status === 'rejeitado') {
+        await signOut(auth);
+        document.getElementById('gate-err').textContent='Acesso negado.';
+        return;
+      }
+      window._user=user; window._papel='admin'; window._dados=dados;
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
+      _buildNav('admin','admin.html');
       setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'),600);
       loadAll();
-    } else {
-      // Acesso negado — faz logout e mostra mensagem
+    } catch(e) {
+      console.error(e);
+      document.getElementById('gate-err').textContent='Erro ao verificar acesso.';
       await signOut(auth);
-      document.getElementById('gate-err').style.color = 'rgba(255,120,120,.9)';
-      document.getElementById('gate-err').textContent = '⛔ Acesso restrito. Você não tem permissão para acessar o painel.';
-      document.getElementById('gate-email').value = '';
-      document.getElementById('gate-input').value = '';
     }
   } else {
     document.getElementById('app').classList.remove('visible');
     document.getElementById('gate').classList.remove('hidden');
+    document.getElementById('dna-nav')?.classList.remove('show');
   }
 });
 
@@ -500,14 +550,19 @@ function traduzirErroAdmin(code) {
 /* ── TABS ── */
 window.switchTab = function(tab) {
   currentTab=tab;
-  document.getElementById('tab-visitantes').style.display=tab==='visitantes'?'block':'none';
-  document.getElementById('tab-casas').classList.toggle('active',tab==='casas');
-  document.getElementById('tab-feed').style.display=tab==='feed'?'block':'none';
-  document.getElementById('t-visitantes').classList.toggle('active',tab==='visitantes');
-  document.getElementById('t-casas').classList.toggle('active',tab==='casas');
-  document.getElementById('t-feed').classList.toggle('active',tab==='feed');
+  ['tab-visitantes','tab-casas','tab-usuarios','tab-feed'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  ['t-visitantes','t-casas','t-usuarios','t-feed'].forEach(id=>{
+    document.getElementById(id)?.classList.remove('active');
+  });
+  if(tab==='visitantes'){document.getElementById('tab-visitantes').style.display='block';}
+  if(tab==='casas'){document.getElementById('tab-casas').style.display='block';}
+  if(tab==='usuarios'){document.getElementById('tab-usuarios').style.display='block';loadUsuarios();}
+  if(tab==='feed'){document.getElementById('tab-feed').style.display='block';loadFeedPosts();}
+  document.getElementById('t-'+tab)?.classList.add('active');
   document.getElementById('btn-refresh').style.display=tab==='visitantes'?'inline-flex':'none';
-  if(tab==='feed') loadFeedPosts();
 };
 document.getElementById('tab-visitantes').style.display='block';
 window.refresh = ()=>loadAll();
@@ -797,6 +852,89 @@ function showToastAdmin(msg){
   t.textContent=msg;document.body.appendChild(t);
   setTimeout(()=>t.remove(),2500);
 }
+
+/* GESTÃO DE USUÁRIOS */
+const PAPEIS = ['voluntario','lider','admin'];
+const PAPEL_LABEL = {voluntario:'Voluntário', lider:'Líder', admin:'Admin'};
+
+window.loadUsuarios = async function() {
+  try {
+    const snap = await getDocs(query(collection(db,'usuarios'), orderBy('criadoEm','desc')));
+    const todos = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const pendentes = todos.filter(u=>u.status==='pendente');
+    const aprovados = todos.filter(u=>u.status==='aprovado');
+    const rejeitados = todos.filter(u=>u.status==='rejeitado');
+    
+    renderPendentes(pendentes);
+    renderAprovados([...aprovados,...rejeitados]);
+  } catch(e) { console.error(e); }
+};
+
+function renderPendentes(list) {
+  const el = document.getElementById('list-pendentes');
+  if(!list.length) { el.innerHTML='<div style="color:var(--dimmer);font-family:Crimson Pro,serif;font-style:italic;font-size:13px;padding:8px 0">Nenhum pendente.</div>'; return; }
+  el.innerHTML = list.map(u=>`
+    <div style="background:var(--card);border:1px solid rgba(217,58,58,.2);padding:12px 14px;margin-bottom:8px">
+      <div style="font-family:Inter,sans-serif;font-size:14px;font-weight:600;color:var(--w);margin-bottom:2px">${u.nome||'—'}</div>
+      <div style="font-size:12px;color:var(--dimmer);margin-bottom:10px">${u.email||'—'}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${PAPEIS.map(p=>`<button onclick="aprovarUsuario('${u.id}','${p}')" style="background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);color:#4caf50;font-family:Inter,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;cursor:pointer">✓ ${PAPEL_LABEL[p]}</button>`).join('')}
+        <button onclick="rejeitarUsuario('${u.id}')" style="background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:rgba(255,120,120,.8);font-family:Inter,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;cursor:pointer">✗ Rejeitar</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderAprovados(list) {
+  const el = document.getElementById('list-aprovados');
+  if(!list.length) { el.innerHTML='<div style="color:var(--dimmer);font-family:Crimson Pro,serif;font-style:italic;font-size:13px;padding:8px 0">Nenhum usuário ativo.</div>'; return; }
+  el.innerHTML = list.map(u=>`
+    <div style="background:var(--card);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-family:Inter,sans-serif;font-size:14px;font-weight:600;color:var(--w)">${u.nome||'—'}</div>
+          <div style="font-size:11px;color:var(--dimmer)">${u.email||'—'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;${u.status==='rejeitado'?'background:rgba(255,80,80,.1);color:rgba(255,120,120,.7);border:1px solid rgba(255,80,80,.2)':'background:rgba(76,175,80,.1);color:#4caf50;border:1px solid rgba(76,175,80,.2)'}">${u.status==='rejeitado'?'Rejeitado':PAPEL_LABEL[u.papel]||u.papel}</span>
+          <select onchange="alterarPapel('${u.id}',this.value)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--w);font-family:Inter,sans-serif;font-size:11px;padding:5px 8px;cursor:pointer;-webkit-appearance:none">
+            <option value="">Alterar papel</option>
+            ${PAPEIS.map(p=>`<option value="${p}"${u.papel===p?' selected':''}>${PAPEL_LABEL[p]}</option>`).join('')}
+            <option value="rejeitado">Revogar acesso</option>
+          </select>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+window.aprovarUsuario = async function(uid, papel) {
+  try {
+    await updateDoc(doc(db,'usuarios',uid),{status:'aprovado',papel,aprovadoEm:new Date().toLocaleString('pt-BR')});
+    showToastAdmin(`✓ Aprovado como ${PAPEL_LABEL[papel]}`);
+    loadUsuarios();
+  } catch(e) { showToastAdmin('Erro ao aprovar.'); }
+};
+
+window.rejeitarUsuario = async function(uid) {
+  try {
+    await updateDoc(doc(db,'usuarios',uid),{status:'rejeitado'});
+    showToastAdmin('Acesso rejeitado.');
+    loadUsuarios();
+  } catch(e) { showToastAdmin('Erro.'); }
+};
+
+window.alterarPapel = async function(uid, valor) {
+  if(!valor) return;
+  try {
+    if(valor==='rejeitado') {
+      await updateDoc(doc(db,'usuarios',uid),{status:'rejeitado'});
+      showToastAdmin('Acesso revogado.');
+    } else {
+      await updateDoc(doc(db,'usuarios',uid),{papel:valor,status:'aprovado'});
+      showToastAdmin(`Papel alterado para ${PAPEL_LABEL[valor]}.`);
+    }
+    loadUsuarios();
+  } catch(e) { showToastAdmin('Erro ao alterar.'); }
+};
 
 /* EXPORT CSV */
 window.exportCSV = function() {
