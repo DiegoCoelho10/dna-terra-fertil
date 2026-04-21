@@ -103,6 +103,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 /* HEART ANIMATION */
 .heart-burst{position:fixed;pointer-events:none;font-size:28px;z-index:9999;animation:heartBurst .7s ease-out forwards}
 @keyframes heartBurst{0%{transform:scale(0) translateY(0);opacity:1}60%{transform:scale(1.4) translateY(-30px);opacity:1}100%{transform:scale(1) translateY(-60px);opacity:0}}
+#dna-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);border-top:1px solid rgba(255,255,255,.08);display:none;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:9000}
+#dna-nav.show{display:flex}
+.dna-ni{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.3);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;min-width:52px;border:none;background:none;cursor:pointer;-webkit-appearance:none}
+.dna-ni:hover,.dna-ni.on{color:#D93A3A}
+.dna-ni span:first-child{font-size:19px;line-height:1}
 </style>
 </head>
 <body>
@@ -135,28 +140,43 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
   </div>
 </div>
 
+<nav id="dna-nav"></nav>
 <div id="toast"></div>
-<nav class="bottom-nav">
-    <a href="index.html" class="nav-item"><span class="nav-icon">🌱</span>Voluntário</a>
-    <a href="admin.html" class="nav-item"><span class="nav-icon">⚙️</span>Admin</a>
-    <a href="lider.html" class="nav-item"><span class="nav-icon">🏠</span>Líder</a>
-    <a href="mapa.html" class="nav-item"><span class="nav-icon">🗺️</span>Mapa</a>
-    <button class="nav-item active"><span class="nav-icon">📸</span>Feed</button>
-  </nav>
+
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getStorage, ref, uploadString, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-const db = getFirestore(initializeApp({
+const _app = initializeApp({
   apiKey:"AIzaSyC46bONBdDeVbK4e7E_zIgveEokleOpKa4",
   authDomain:"dna-terra-fertil.firebaseapp.com",
   projectId:"dna-terra-fertil",
   storageBucket:"dna-terra-fertil.firebasestorage.app",
   messagingSenderId:"937958327076",
   appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"
-}));
+});
+const db = getFirestore(_app);
+const auth = getAuth(_app);
+const _NAV2=[
+  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
+  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
+  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
+  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
+  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
+];
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.replace('index.html'); return; }
+  try {
+    const { getDoc, doc: fbDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(fbDoc(db,'usuarios',user.uid));
+    if(!snap.exists()||snap.data().status!=='aprovado'){window.location.replace('index.html');return;}
+    const papel=snap.data().papel||'voluntario';
+    const nav=document.getElementById('dna-nav');
+    if(nav){nav.innerHTML=_NAV2.filter(n=>n.r.includes(papel)).map(n=>`<a href="${n.p}" class="dna-ni${n.p==='feed.html'?' on':''}">`+`<span>${n.i}</span><span>${n.l}</span></a>`).join('');nav.classList.add('show');}
+  } catch(e){console.error(e);}
+});
 
 let meuNome = localStorage.getItem('dna_feed_nome') || '';
 let posts = [];
