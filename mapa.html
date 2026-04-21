@@ -104,17 +104,16 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 .gm-style .gm-style-iw-c{background:#111!important;color:#fff!important;border:1px solid rgba(217,58,58,.3)!important;box-shadow:none!important}
 .gm-style .gm-style-iw-d{color:#fff!important}
 .gm-style .gm-style-iw-tc::after{background:#111!important}
+.bottom-nav-fixed{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:1001}
+.nav-item-m{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.28);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;cursor:pointer;border:none;background:none;transition:color .2s;min-width:52px;-webkit-appearance:none}
+.nav-item-m.active{color:#D93A3A}
+.nav-icon-m{font-size:18px;line-height:1}
 </style>
 </head>
 <body>
 
-<div id="gate">
-  <div class="gate-logo">DNA</div>
-  <div class="gate-sub">Mapa · Terra Fértil</div>
-  <div class="gate-label">Senha de acesso</div>
-  <input type="password" class="gate-input" id="gate-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
-  <div class="gate-err" id="gate-err"></div>
-  <button class="gate-btn" onclick="checkPassword()">Entrar</button>
+<div id="gate" style="position:fixed;inset:0;background:#080808;display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.15em;color:rgba(255,255,255,.3)">Verificando acesso...</div>
 </div>
 
 <div id="app">
@@ -153,10 +152,16 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
   </div>
 </div>
 <div id="toast"></div>
+<nav class="bottom-nav-fixed">
+    <a href="index.html" class="nav-item-m"><span class="nav-icon-m">🌱</span>Voluntário</a>
+    <a href="admin.html" class="nav-item-m"><span class="nav-icon-m">⚙️</span>Admin</a>
+    <a href="lider.html" class="nav-item-m"><span class="nav-icon-m">🏠</span>Líder</a>
+    <button class="nav-item-m active"><span class="nav-icon-m">🗺️</span>Mapa</button>
+    <a href="feed.html" class="nav-item-m"><span class="nav-icon-m">📸</span>Feed</a>
+  </nav>
 
 <script>
 const GMKEY = 'AIzaSyDZy05M7zUb-M4bIbKUi7KOM1BnRwyx8_M';
-const SENHA = 'dna2025';
 const IGREJA = { nome:'Terra Fértil', end:'Rua Augusto de Castro, 4, Inhoaíba, Rio de Janeiro, RJ', lat:-22.9087, lng:-43.6003 };
 
 // Firebase config
@@ -176,25 +181,24 @@ let showCasas=true, showVisit=true;
 let geocodeCache={};
 let db;
 
-/* GATE */
-window.checkPassword = function() {
-  const val = document.getElementById('gate-input').value;
-  if (val === SENHA) {
-    sessionStorage.setItem('dna_auth','1');
-    document.getElementById('gate').classList.add('hidden');
-    document.getElementById('app').classList.add('visible');
-    loadFirebase();
-  } else {
-    document.getElementById('gate-err').textContent = 'Senha incorreta.';
-    document.getElementById('gate-input').value = '';
-    document.getElementById('gate-input').focus();
-  }
-};
-if (sessionStorage.getItem('dna_auth')==='1') {
-  document.getElementById('gate').classList.add('hidden');
-  document.getElementById('app').classList.add('visible');
-  loadFirebase();
+/* GATE — Firebase Auth */
+async function initAuth() {
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const authApp = initializeApp(FB, 'mapa-auth');
+  const auth = getAuth(authApp);
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      loadFirebase();
+    } else {
+      // Não logado — redireciona para o index
+      window.location.href = 'index.html';
+    }
+  });
 }
+initAuth();
 
 /* FIREBASE + GOOGLE MAPS load */
 async function loadFirebase() {
