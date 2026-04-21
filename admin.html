@@ -177,6 +177,33 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .casa-end{font-family:'Inter',sans-serif;font-size:11px;color:var(--dimmer)}
 .casa-count{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rb);margin-top:4px}
 
+/* EDIT FIELDS */
+.edit-field{background:rgba(255,255,255,.06);border:1px solid rgba(217,58,58,.3);color:var(--w);font-family:'Inter',sans-serif;font-size:14px;padding:7px 10px;outline:none;width:100%;border-radius:2px;-webkit-appearance:none;margin-top:4px}
+.edit-field:focus{border-color:var(--rb)}
+.edit-row{margin-bottom:8px}
+.edit-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--dimmer)}
+.btn-edit-save{background:rgba(139,23,23,.3);border:1px solid rgba(217,58,58,.3);color:var(--rb);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:8px 16px;cursor:pointer;border-radius:2px;margin-top:8px;-webkit-appearance:none;transition:all .2s}
+.btn-edit-save:hover{background:rgba(139,23,23,.5);color:var(--w)}
+.edit-section{border-top:1px solid var(--border);padding:10px 14px;display:none}
+.edit-section.open{display:block}
+.edit-toggle{width:100%;background:none;border:none;color:var(--dimmer);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;padding:10px 14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:6px;-webkit-appearance:none;transition:color .2s;border-top:1px solid var(--border)}
+.edit-toggle:hover{color:var(--w)}
+
+/* HISTÓRICO */
+.historico-section{border-top:1px solid var(--border);padding:10px 14px}
+.hist-title{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--dimmer);margin-bottom:8px}
+.hist-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(255,255,255,.03);border-radius:2px}
+.hist-icon{font-size:12px;flex-shrink:0;margin-top:1px}
+.hist-text{font-family:'Inter',sans-serif;font-size:11px;color:var(--dim);flex:1}
+.hist-time{font-size:10px;color:var(--dimmer);flex-shrink:0}
+.hist-empty{font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;color:var(--dimmer);text-align:center;padding:8px 0}
+
+/* CARD ACTIONS — 2 rows */
+.card-actions{border-top:1px solid var(--border)}
+.card-actions-row{display:flex}
+.card-actions-row:not(:last-child){border-bottom:1px solid var(--border)}
+
+/* CONFIRM MODAL */
 /* CONFIRM MODAL */
 #confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}
 #confirm-modal.show{display:flex}
@@ -243,6 +270,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
     <div class="header-right">
       <button class="btn-sm" id="btn-refresh" onclick="refresh()">↻</button>
       <a href="mapa.html" class="btn-sm">🗺 Mapa</a>
+      <a href="lider.html" class="btn-sm">👤 Líder</a>
       <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
   </div>
@@ -288,7 +316,8 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
         <div><label class="c-label">Nome do Líder *</label><input type="text" class="c-input" id="c-lider" placeholder="Nome do líder" autocapitalize="words"></div>
       </div>
       <div><label class="c-label">Endereço Completo *</label><input type="text" class="c-input" id="c-end" placeholder="Rua, número, bairro" autocapitalize="words"></div>
-      <div style="margin-top:10px"><label class="c-label">Dia e Horário</label><input type="text" class="c-input" id="c-horario" placeholder="Ex: Quinta-feira às 19h30" autocapitalize="words"></div>
+      <div style="margin-top:10px"><label class="c-label">Email do Líder</label><input type="email" class="c-input" id="c-email-lider" placeholder="email@exemplo.com" autocomplete="email" inputmode="email"></div>
+    <div style="margin-top:10px"><label class="c-label">Dia e Horário</label><input type="text" class="c-input" id="c-horario" placeholder="Ex: Quinta-feira às 19h30" autocapitalize="words"></div>
       <button class="btn-add" id="btn-add-casa" onclick="addCasa()" style="margin-top:14px">+ Cadastrar Casa</button>
     </div>
     <div class="casas-list-title" id="casas-list-title">Casas Cadastradas</div>
@@ -369,12 +398,29 @@ const googleProvider = new GoogleAuthProvider();
 let allVisitors=[], allCasas=[], filteredVisitors=[], tagFilter='all', currentTab='visitantes';
 
 /* ── AUTH ── */
-onAuthStateChanged(auth, (user) => {
+// ── EMAILS AUTORIZADOS NO ADMIN ──
+const ADMINS_AUTORIZADOS = [
+  'dsdiegocoelho@gmail.com',
+  // adicione mais emails aqui conforme necessário
+];
+
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    document.getElementById('gate').classList.add('hidden');
-    document.getElementById('app').classList.add('visible');
-    setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'),600);
-    loadAll();
+    const email = user.email || '';
+    if (ADMINS_AUTORIZADOS.includes(email.toLowerCase())) {
+      // Acesso autorizado
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'),600);
+      loadAll();
+    } else {
+      // Acesso negado — faz logout e mostra mensagem
+      await signOut(auth);
+      document.getElementById('gate-err').style.color = 'rgba(255,120,120,.9)';
+      document.getElementById('gate-err').textContent = '⛔ Acesso restrito. Você não tem permissão para acessar o painel.';
+      document.getElementById('gate-email').value = '';
+      document.getElementById('gate-input').value = '';
+    }
   } else {
     document.getElementById('app').classList.remove('visible');
     document.getElementById('gate').classList.remove('hidden');
@@ -574,8 +620,10 @@ const waIcon=`<svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-
 
 function initials(n){ const p=(n||'').trim().split(' ').filter(Boolean); return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():(p[0]||'?').slice(0,2).toUpperCase(); }
 
-function msg1(nome){ const n=nome.split(' ')[0]; return `Oi ${n}, tudo bem?\n\nQue alegria ter você com a gente hoje na Terra Fértil! A gente ficou muito feliz com sua presença.\n\nEsperamos que o culto tenha tocado seu coração. Você já faz parte da nossa família e sempre terá um lugar aqui.\n\nQualquer dúvida sobre a nossa igreja, pode chamar!\n\nCom carinho, família Terra Fértil`; }
-function msg2(nome){ const n=nome.split(' ')[0]; return `Oi ${n}!\n\nAinda pensando na sua presença com a gente no culto. Foi muito bom ter você aqui!\n\nQueremos muito te ver de novo. A gente se reúne toda terça-feira às 20h e todo domingo às 19h. Você é sempre bem-vindo(a).\n\nConta com a gente. Com muito carinho, família Terra Fértil`; }
+function msg1(nome){ const n=nome.split(' ')[0]; return `${n}! Que alegria ter você com a gente hoje! 2026 é o ano de Romper os Limites, e sua presença aqui não foi por acaso. A Terra Fértil é sua casa. Conta com a gente sempre! 🌱`; }
+function msg2(nome){ const n=nome.split(' ')[0]; return `${n}, ainda pensando na sua presença com a gente no último culto. Foi lindo te ver por aqui! Toda terça às 20h e domingo às 19h tem culto na Terra Fértil. 2026 é tempo de Romper os Limites — você é sempre bem-vindo(a)! 🌱`; }
+function msgTerca(nome){ const n=nome.split(' ')[0]; return `${n}, hoje tem culto aqui na Terra Fértil, 20h! Rua Augusto de Castro, 4 — Inhoaíba. Vem romper limites com a gente? Te esperamos! 🔥`; }
+function msgDomingo(nome){ const n=nome.split(' ')[0]; return `${n}, domingo é dia de encontro! Culto hoje às 19h na Terra Fértil. Rua Augusto de Castro, 4 — Inhoaíba. Você faz falta aqui, vem romper limites! 🙌`; }
 
 function buildCard(v) {
   const ini=initials(v.nome);
@@ -585,14 +633,17 @@ function buildCard(v) {
   const alert=needs48hAlert(v);
   const dias=diasDesde(v);
   const firstDate=primeiraVisitaData(v);
-  const msg1Sent=!!v.msg1Sent, msg2Sent=!!v.msg2Sent;
   const digits=(v.celular||'').replace(/\D/g,'');
-  const link1=hasCel?`https://wa.me/55${digits}?text=${encodeURIComponent(msg1(v.nome))}`:'#';
-  const link2=hasCel?`https://wa.me/55${digits}?text=${encodeURIComponent(msg2(v.nome))}`:'#';
-
+  const mk=(campo,fn)=>hasCel?`https://wa.me/55${digits}?text=${encodeURIComponent(fn(v.nome))}`:'#';
+  const link1=mk('msg1',msg1), link2=mk('msg2',msg2);
+  const linkT=mk('msgTerca',msgTerca), linkD=mk('msgDomingo',msgDomingo);
   const casasHTML=casas.length?`<div class="casas-sugeridas show"><div class="casas-label">Casas próximas</div>${casas.map(c=>`<span class="casa-pill"><strong>${c.nome}</strong> · ${c.lider}${c.horario?' · '+c.horario:''}</span>`).join('')}</div>`:'';
-  const sentBadge1="";
-  const sentBadge2="";
+
+  // Histórico
+  const hist = v.historico||[];
+  const histHTML = hist.length
+    ? hist.slice().reverse().map(h=>`<div class="hist-item"><span class="hist-icon">${h.icon||'📨'}</span><span class="hist-text">${h.tipo}</span><span class="hist-time">${h.hora}</span></div>`).join('')
+    : '<div class="hist-empty">Nenhuma mensagem enviada ainda.</div>';
 
   return `<div class="visitor-card" data-id="${v.id}" data-nome="${(v.nome||'').replace(/"/g,'&quot;')}" data-idx="0">
     <div class="press-bar"></div>
@@ -613,6 +664,19 @@ function buildCard(v) {
       </div>
     </div>
     ${casasHTML}
+
+    <!-- EDITAR -->
+    <button class="edit-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+      ✏️ Editar dados
+    </button>
+    <div class="edit-section">
+      <div class="edit-row"><div class="edit-label">Nome</div><input class="edit-field" id="ename-${v.id}" value="${(v.nome||'').replace(/"/g,'&quot;')}"></div>
+      <div class="edit-row"><div class="edit-label">Celular</div><input class="edit-field" id="ecel-${v.id}" value="${v.celular||''}" inputmode="numeric"></div>
+      <div class="edit-row"><div class="edit-label">Endereço</div><input class="edit-field" id="eend-${v.id}" value="${v.endereco||''}"></div>
+      <button class="btn-edit-save" onclick="salvarEdicao('${v.id}')">✓ Salvar alterações</button>
+    </div>
+
+    <!-- ANOTAÇÕES -->
     <div class="card-notes">
       <button class="notes-toggle" onclick="toggleNote(this)">
         <span class="arrow">▶</span> Anotações${v.notas?' <span style="color:var(--rb);font-size:9px">● nota salva</span>':''}
@@ -625,11 +689,24 @@ function buildCard(v) {
         </div>
       </div>
     </div>
-    <div class="card-actions">
-      <a class="wa-btn msg1 ${noCel} ${msg1Sent?'sent':''}" href="${link1}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg1')">${waIcon} Boas-vindas</a>
-      <a class="wa-btn msg2 ${noCel} ${msg2Sent?'sent':''}" href="${link2}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg2')">${waIcon} Follow-up</a>
+
+    <!-- HISTÓRICO -->
+    <div class="historico-section">
+      <div class="hist-title">Histórico de contatos</div>
+      <div id="hist-${v.id}">${histHTML}</div>
     </div>
 
+    <!-- MENSAGENS — linha 1 -->
+    <div class="card-actions">
+      <div class="card-actions-row">
+        <a class="wa-btn msg1 ${noCel} ${v.msg1Sent?'sent':''}" href="${link1}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg1','🎉','Boas-vindas')">${waIcon} Boas-vindas</a>
+        <a class="wa-btn msg2 ${noCel} ${v.msg2Sent?'sent':''}" href="${link2}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msg2','🌱','Follow-up 48h')">${waIcon} Follow-up</a>
+      </div>
+      <div class="card-actions-row">
+        <a class="wa-btn ${noCel} ${v.msgTercaSent?'sent':''}" href="${linkT}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msgTerca','🔥','Convite Terça 20h')">${waIcon} Terça 20h</a>
+        <a class="wa-btn ${noCel} ${v.msgDomingoSent?'sent':''}" href="${linkD}" target="_blank" rel="noopener" onclick="markSent('${v.id}','msgDomingo','🙌','Convite Domingo 19h')">${waIcon} Domingo 19h</a>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -655,24 +732,55 @@ window.saveNote = async function(id) {
   } catch(e){ alert('Erro ao salvar.'); }
 };
 
-/* MARK SENT */
-window.markSent = async function(id, field) {
+/* MARK SENT + HISTÓRICO */
+window.markSent = async function(id, field, icon, tipo) {
   try {
+    const hora = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const v = allVisitors.find(x=>x.id===id);
+    const hist = v?.historico || [];
+    hist.push({tipo, icon, hora, campo:field});
     const update={};
     update[field+'Sent']=true;
-    update[field+'SentAt']=new Date().toLocaleString('pt-BR');
+    update[field+'SentAt']=hora;
+    update['historico']=hist;
     await updateDoc(doc(db,'visitantes',id),update);
-    const v=allVisitors.find(x=>x.id===id);
-    if(v){v[field+'Sent']=true;}
-    // update badge visually
+    if(v){v[field+'Sent']=true; v.historico=hist;}
+    // Atualiza histórico no card visualmente
+    const histEl=document.getElementById('hist-'+id);
+    if(histEl){
+      histEl.innerHTML=hist.slice().reverse().map(h=>`<div class="hist-item"><span class="hist-icon">${h.icon||'📨'}</span><span class="hist-text">${h.tipo}</span><span class="hist-time">${h.hora}</span></div>`).join('');
+    }
+    // Marca botão como enviado
     const card=document.querySelector(`[data-id="${id}"]`);
     if(card){
-      const btn=card.querySelector(`.wa-btn.${field}`);
-      if(btn){btn.classList.add('sent');if(!btn.querySelector('.sent-badge')){}}
+      const btn=card.querySelector(`a[onclick*="${field}"]`);
+      if(btn) btn.classList.add('sent');
     }
     updateStats();
   } catch(e){ console.error(e); }
 };
+
+/* SALVAR EDIÇÃO */
+window.salvarEdicao = async function(id) {
+  const nome = document.getElementById('ename-'+id)?.value.trim();
+  const celular = document.getElementById('ecel-'+id)?.value.trim();
+  const endereco = document.getElementById('eend-'+id)?.value.trim();
+  if(!nome){alert('Nome não pode ficar vazio.');return;}
+  try{
+    await updateDoc(doc(db,'visitantes',id),{nome,celular:celular||null,endereco:endereco||null});
+    const v=allVisitors.find(x=>x.id===id);
+    if(v){v.nome=nome;v.celular=celular;v.endereco=endereco;}
+    showToastAdmin('Dados salvos!');
+    applyFilters();
+  }catch(e){alert('Erro ao salvar.');}
+};
+
+function showToastAdmin(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f0f0f;border:1px solid rgba(217,58,58,.35);border-left:3px solid #D93A3A;color:#fff;font-family:Crimson Pro,serif;font-style:italic;font-size:14px;padding:11px 18px;z-index:9000;max-width:300px;text-align:center;pointer-events:none';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
 
 /* EXPORT CSV */
 window.exportCSV = function() {
@@ -732,9 +840,10 @@ window.addCasa = async function() {
   if(!nome||!lider||!end){alert('Preencha nome, líder e endereço.');return;}
   const btn=document.getElementById('btn-add-casa');btn.disabled=true;
   try {
-    const ref=await addDoc(collection(db,'casas'),{nome,lider,endereco:end,horario:horario||null,timestamp:serverTimestamp()});
-    allCasas.push({id:ref.id,nome,lider,endereco:end,horario:horario||null});
-    ['c-nome','c-lider','c-end','c-horario'].forEach(id=>document.getElementById(id).value='');
+    const emailLider = document.getElementById('c-email-lider').value.trim();
+    const ref=await addDoc(collection(db,'casas'),{nome,lider,endereco:end,horario:horario||null,emailLider:emailLider||null,timestamp:serverTimestamp()});
+    allCasas.push({id:ref.id,nome,lider,endereco:end,horario:horario||null,emailLider:emailLider||null});
+    ['c-nome','c-lider','c-end','c-email-lider','c-horario'].forEach(id=>document.getElementById(id).value='');
     renderCasas();
   } catch(e){alert('Erro ao salvar.');}
   btn.disabled=false;
