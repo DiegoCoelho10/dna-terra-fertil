@@ -108,12 +108,19 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
 .nav-item-m{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.28);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;cursor:pointer;border:none;background:none;transition:color .2s;min-width:52px;-webkit-appearance:none}
 .nav-item-m.active{color:#D93A3A}
 .nav-icon-m{font-size:18px;line-height:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+#dna-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);border-top:1px solid rgba(255,255,255,.08);display:none;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:1001}
+#dna-nav.show{display:flex}
+.dna-ni{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.3);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;min-width:52px;border:none;background:none;cursor:pointer;-webkit-appearance:none}
+.dna-ni:hover,.dna-ni.on{color:#D93A3A}
+.dna-ni span:first-child{font-size:19px;line-height:1}
 </style>
 </head>
 <body>
 
-<div id="gate" style="position:fixed;inset:0;background:#080808;display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.15em;color:rgba(255,255,255,.3)">Verificando acesso...</div>
+<div id="gate" style="position:fixed;inset:0;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9999">
+  <div style="width:32px;height:32px;border:2px solid rgba(217,58,58,.3);border-top-color:#D93A3A;border-radius:50%;animation:spin .8s linear infinite"></div>
+  <div style="font-family:Crimson Pro,serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.4)">Verificando acesso...</div>
 </div>
 
 <div id="app">
@@ -151,14 +158,9 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:'Inter',sa
     <div class="panel-close-bottom"><button onclick="closePanel()">← Fechar</button></div>
   </div>
 </div>
+<nav id="dna-nav"></nav>
 <div id="toast"></div>
-<nav class="bottom-nav-fixed">
-    <a href="index.html" class="nav-item-m"><span class="nav-icon-m">🌱</span>Voluntário</a>
-    <a href="admin.html" class="nav-item-m"><span class="nav-icon-m">⚙️</span>Admin</a>
-    <a href="lider.html" class="nav-item-m"><span class="nav-icon-m">🏠</span>Líder</a>
-    <button class="nav-item-m active"><span class="nav-icon-m">🗺️</span>Mapa</button>
-    <a href="feed.html" class="nav-item-m"><span class="nav-icon-m">📸</span>Feed</a>
-  </nav>
+
 
 <script>
 const GMKEY = 'AIzaSyDZy05M7zUb-M4bIbKUi7KOM1BnRwyx8_M';
@@ -183,19 +185,37 @@ let db;
 
 /* GATE — Firebase Auth */
 async function initAuth() {
-  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { initializeApp, getApps, getApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
   const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-  const authApp = initializeApp(FB, 'mapa-auth');
+  const { getFirestore: _gfs, doc: _doc, getDoc: _getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  
+  const _apps = getApps();
+  const authApp = _apps.find(a=>a.name==='[DEFAULT]') || initializeApp(FB);
   const auth = getAuth(authApp);
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
+  const _db = _gfs(authApp);
+  
+  const _NAV=[
+    {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
+    {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
+    {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
+    {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
+    {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
+  ];
+  
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.replace('index.html'); return; }
+    try {
+      const snap = await _getDoc(_doc(_db,'usuarios',user.uid));
+      if(!snap.exists()||snap.data().status!=='aprovado'||!['lider','admin'].includes(snap.data().papel)){
+        window.location.replace('index.html'); return;
+      }
+      const papel=snap.data().papel;
+      const nav=document.getElementById('dna-nav');
+      if(nav){nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>`<a href="${n.p}" class="dna-ni${n.p==='mapa.html'?' on':''}">`+`<span>${n.i}</span><span>${n.l}</span></a>`).join('');nav.classList.add('show');}
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
       loadFirebase();
-    } else {
-      // Não logado — redireciona para o index
-      window.location.href = 'index.html';
-    }
+    } catch(e) { console.error(e); window.location.replace('index.html'); }
   });
 }
 initAuth();
