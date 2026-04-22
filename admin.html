@@ -412,7 +412,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, getDoc, setDoc, query, orderBy, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, getDoc, setDoc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const app = initializeApp({
@@ -448,48 +448,78 @@ function _buildNav(papel, active) {
 }
 
 /* ── AUTH ── */
-// ── AUTH ADMIN COM FIRESTORE ──
+// ── AUTH ADMIN ──
+const _BOOTSTRAP = ['dsdiegocoelho@gmail.com'];
+const _NAV_DEF = [
+  ['index.html','🌱','Cadastro',['voluntario','lider','admin']],
+  ['lider.html','🏠','Líder',['lider','admin']],
+  ['mapa.html','🗺️','Mapa',['lider','admin']],
+  ['feed.html','📸','Feed',['voluntario','lider','admin']],
+  ['admin.html','⚙️','Admin',['admin']],
+];
+function _buildNav(papel) {
+  const nav=document.getElementById('dna-nav');
+  if(!nav) return;
+  nav.innerHTML=_NAV_DEF.filter(n=>n[3].includes(papel)).map(n=>
+    `<a href="${n[0]}" class="dna-ni${n[0]==='admin.html'?' on':''}">`+
+    `<span class="ni">${n[1]}</span><span>${n[2]}</span></a>`
+  ).join('');
+  nav.classList.add('show');
+}
+
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    try {
-      let snap = await getDoc(doc(db,'usuarios',user.uid));
-      if (!snap.exists()) {
-        // Primeiro acesso - criar como pendente
+  if (!user) {
+    document.getElementById('app').classList.remove('visible');
+    document.getElementById('gate').classList.remove('hidden');
+    document.getElementById('dna-nav').classList.remove('show');
+    return;
+  }
+  try {
+    const email = (user.email||'').toLowerCase();
+    let snap = await getDoc(doc(db,'usuarios',user.uid));
+    
+    // Bootstrap: se é admin autorizado e não tem doc ou não é admin, corrigir
+    if (_BOOTSTRAP.includes(email)) {
+      if (!snap.exists() || snap.data().papel !== 'admin') {
         await setDoc(doc(db,'usuarios',user.uid), {
           uid:user.uid, email:user.email,
           nome:user.displayName||user.email.split('@')[0],
-          papel:'voluntario', status:'pendente', criadoEm:serverTimestamp()
-        });
+          papel:'admin', status:'aprovado',
+          criadoEm:serverTimestamp()
+        }, {merge:true});
         snap = await getDoc(doc(db,'usuarios',user.uid));
       }
-      const dados = snap.data();
-      if (dados.papel !== 'admin') {
-        await signOut(auth);
-        document.getElementById('gate-err').style.color='rgba(255,120,120,.9)';
-        document.getElementById('gate-err').textContent='⛔ Acesso restrito ao painel administrativo.';
-        document.getElementById('gate-input').value='';
-        return;
-      }
-      if (dados.status === 'rejeitado') {
-        await signOut(auth);
-        document.getElementById('gate-err').textContent='Acesso negado.';
-        return;
-      }
-      window._user=user; window._papel='admin'; window._dados=dados;
-      document.getElementById('gate').classList.add('hidden');
-      document.getElementById('app').classList.add('visible');
-      _buildNav('admin','admin.html');
-      setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'),600);
-      loadAll();
-    } catch(e) {
-      console.error(e);
-      document.getElementById('gate-err').textContent='Erro ao verificar acesso.';
+    } else if (!snap.exists()) {
+      await setDoc(doc(db,'usuarios',user.uid), {
+        uid:user.uid, email:user.email,
+        nome:user.displayName||user.email.split('@')[0],
+        papel:'voluntario', status:'pendente',
+        criadoEm:serverTimestamp()
+      });
       await signOut(auth);
+      document.getElementById('gate-err').style.color='rgba(255,120,120,.9)';
+      document.getElementById('gate-err').textContent='⛔ Você não tem acesso ao painel admin.';
+      return;
     }
-  } else {
-    document.getElementById('app').classList.remove('visible');
-    document.getElementById('gate').classList.remove('hidden');
-    document.getElementById('dna-nav')?.classList.remove('show');
+    
+    const dados = snap.data();
+    if (dados.papel !== 'admin' || dados.status !== 'aprovado') {
+      await signOut(auth);
+      document.getElementById('gate-err').style.color='rgba(255,120,120,.9)';
+      document.getElementById('gate-err').textContent='⛔ Acesso restrito. Peça ao administrador para liberar.';
+      document.getElementById('gate-input').value='';
+      return;
+    }
+    
+    window._user=user; window._papel='admin'; window._dados=dados;
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    _buildNav('admin');
+    setTimeout(()=>document.getElementById('fb-dot').classList.add('ok'),600);
+    loadAll();
+  } catch(e) {
+    console.error('[Admin Auth]', e);
+    document.getElementById('gate-err').textContent='Erro de conexão. Tente novamente.';
   }
 });
 
