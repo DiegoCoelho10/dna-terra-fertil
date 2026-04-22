@@ -511,72 +511,70 @@ function buildNav(papel) {
 }
 
 // ── AUTH STATE ──
-document.getElementById('s-auth').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px"><div style="width:32px;height:32px;border:2px solid rgba(217,58,58,.3);border-top-color:#D93A3A;border-radius:50%;animation:spin .8s linear infinite"></div><div style="font-family:Crimson Pro,serif;font-style:italic;color:rgba(255,255,255,.4);font-size:14px">Verificando acesso...</div></div>';
-document.getElementById('s-auth').style.cssText = 'display:flex;align-items:center;justify-content:center;background:#080808';
+// ── AUTH INDEX ──
+const _BOOTSTRAP = ['dsdiegocoelho@gmail.com'];
+const _NAV_DEF = [
+  ['index.html','🌱','Cadastro',['voluntario','lider','admin']],
+  ['lider.html','🏠','Líder',['lider','admin']],
+  ['mapa.html','🗺️','Mapa',['lider','admin']],
+  ['feed.html','📸','Feed',['voluntario','lider','admin']],
+  ['admin.html','⚙️','Admin',['admin']],
+];
+function buildNav(papel) {
+  const nav=document.getElementById('dna-nav');
+  if(!nav) return;
+  nav.innerHTML=_NAV_DEF.filter(n=>n[3].includes(papel)).map(n=>
+    `<a href="${n[0]}" class="dna-ni${n[0]==='index.html'?' on':''}">`+
+    `<span class="ni">${n[1]}</span><span>${n[2]}</span></a>`
+  ).join('');
+  nav.classList.add('show');
+}
+
+// Spinner enquanto Firebase inicializa
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById('s-auth').classList.add('active');
+document.getElementById('s-auth').style.cssText='display:flex;align-items:center;justify-content:center;background:#080808;min-height:100vh';
+document.getElementById('s-auth').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div style="width:30px;height:30px;border:2px solid rgba(217,58,58,.2);border-top-color:#D93A3A;border-radius:50%;animation:spin .8s linear infinite"></div><div style="font-family:Crimson Pro,serif;font-style:italic;color:rgba(255,255,255,.3);font-size:14px">Carregando...</div></div>';
 
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window._currentUser = user;
-    // Buscar papel do usuário
-    try {
-      const snap = await getDoc(doc(db,'usuarios',user.uid));
-      if (snap.exists()) {
-        const dados = snap.data();
-        if (dados.status === 'pendente') {
-          // Aguardando aprovação
-          document.getElementById('s-auth').style.cssText = '';
-          document.getElementById('s-auth').innerHTML = '';
-          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-          document.getElementById('s-auth').classList.add('active');
-          document.getElementById('s-auth').innerHTML = `
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:#fff;margin-bottom:12px">Cadastro em análise</div>
-            <div style="font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:rgba(255,255,255,.55);text-align:center;max-width:280px;line-height:1.7">Seu pedido de acesso foi enviado ao administrador. Aguarde a aprovação para continuar.</div>
-            <button onclick="signOut(auth).then(()=>location.reload())" style="margin-top:24px;background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:10px 20px;cursor:pointer">Sair</button>`;
-          document.getElementById('s-auth').style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#080808';
-          return;
-        }
-        if (dados.status === 'rejeitado') {
-          await signOut(auth);
-          mostrarLogin('Acesso negado pelo administrador.');
-          return;
-        }
-        window._papel = dados.papel || 'voluntario';
-        buildNav(window._papel);
-      } else {
-        // Primeiro acesso — criar registro pendente
-        await setDoc(doc(db,'usuarios',user.uid), {
-          uid: user.uid,
-          email: user.email,
-          nome: user.displayName || user.email.split('@')[0],
-          papel: 'voluntario',
-          status: 'pendente',
-          criadoEm: serverTimestamp()
-        });
-        // Mostrar pendente
-        onAuthStateChanged(auth, async (u) => { if(u) location.reload(); });
-        return;
+  if (!user) { _showAuthScreen(); return; }
+  try {
+    const email = (user.email||'').toLowerCase();
+    let snap = await getDoc(doc(db,'usuarios',user.uid));
+    if (_BOOTSTRAP.includes(email)) {
+      if (!snap.exists()||snap.data().papel!=='admin') {
+        await setDoc(doc(db,'usuarios',user.uid),{uid:user.uid,email:user.email,nome:user.displayName||email.split('@')[0],papel:'admin',status:'aprovado',criadoEm:serverTimestamp()},{merge:true});
+        snap = await getDoc(doc(db,'usuarios',user.uid));
       }
-    } catch(e) { console.error(e); }
-    
-    const active = document.querySelector('.screen.active');
-    if (!active || active.id === 's-auth') {
-      showScreen(1);
+    } else if (!snap.exists()) {
+      await setDoc(doc(db,'usuarios',user.uid),{uid:user.uid,email:user.email,nome:user.displayName||email.split('@')[0],papel:'voluntario',status:'pendente',criadoEm:serverTimestamp()});
+      _showPending(); return;
     }
-  } else {
-    mostrarLogin();
-  }
+    const dados = snap.data();
+    if (dados.status==='pendente') { _showPending(); return; }
+    if (dados.status==='rejeitado') { await signOut(auth); _showAuthScreen('Acesso negado pelo administrador.'); return; }
+    window._currentUser=user; window._papel=dados.papel||'voluntario'; window._dados=dados;
+    buildNav(window._papel);
+    showScreen(1);
+  } catch(e) { console.error('[Auth]',e); _showAuthScreen('Erro de conexão.'); }
 });
 
-function mostrarLogin(erro) {
-  window._currentUser = null;
-  document.getElementById('s-auth').style.cssText = '';
-  document.getElementById('s-auth').innerHTML = '';
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function _showPending() {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('s-auth');
+  el.classList.add('active');
+  el.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#080808;min-height:100vh;text-align:center';
+  el.innerHTML='<div style="font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:.1em;color:#fff;margin-bottom:10px">Aguardando aprovação</div>'+
+    '<div style="font-family:Crimson Pro,serif;font-style:italic;font-size:15px;color:rgba(255,255,255,.5);max-width:280px;line-height:1.8;margin-bottom:24px">Cadastro recebido! O administrador irá liberar seu acesso em breve. 🌱</div>'+
+    '<button onclick="signOut(auth).then(()=>location.reload())" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:10px 24px;cursor:pointer;-webkit-appearance:none">Sair</button>';
+}
+function _showAuthScreen(erroMsg) {
+  window._currentUser=null;
+  document.getElementById('s-auth').style.cssText='';
+  document.getElementById('s-auth').innerHTML='';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-auth').classList.add('active');
-  if(erro) {
-    const el = document.getElementById('login-err');
-    if(el) { el.textContent = erro; el.style.color='rgba(255,120,120,.9)'; }
-  }
+  if(erroMsg){setTimeout(()=>{const el=document.getElementById('login-err');if(el){el.textContent=erroMsg;el.style.color='rgba(255,120,120,.9)';}},100);}
 }
 
 // ── AUTH FUNCTIONS ──
