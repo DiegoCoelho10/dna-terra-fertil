@@ -185,47 +185,54 @@ let db;
 
 /* GATE — Firebase Auth */
 async function initAuth() {
-  const { initializeApp, getApps, getApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
   const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-  const { getFirestore: _gfs, doc: _doc, getDoc: _getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  const { getFirestore, doc, getDoc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
   
   const _apps = getApps();
-  const authApp = _apps.find(a=>a.name==='[DEFAULT]') || initializeApp(FB);
-  const auth = getAuth(authApp);
-  const _db = _gfs(authApp);
+  const _app = _apps.length ? _apps[0] : initializeApp(FB);
+  const _auth = getAuth(_app);
+  const _db = getFirestore(_app);
   
+  const _BOOTSTRAP=['dsdiegocoelho@gmail.com'];
   const _NAV=[
-    {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
-    {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
-    {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
-    {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
-    {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
+    ['index.html','🌱','Cadastro',['voluntario','lider','admin']],
+    ['lider.html','🏠','Líder',['lider','admin']],
+    ['mapa.html','🗺️','Mapa',['lider','admin']],
+    ['feed.html','📸','Feed',['voluntario','lider','admin']],
+    ['admin.html','⚙️','Admin',['admin']],
   ];
   
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(_auth, async (user) => {
     if (!user) { window.location.replace('index.html'); return; }
     try {
-      const snap = await _getDoc(_doc(_db,'usuarios',user.uid));
-      if(!snap.exists()||snap.data().status!=='aprovado'||!['lider','admin'].includes(snap.data().papel)){
-        window.location.replace('index.html'); return;
-      }
-      const papel=snap.data().papel;
+      const email=(user.email||'').toLowerCase();
+      let snap=await getDoc(doc(_db,'usuarios',user.uid));
+      if(_BOOTSTRAP.includes(email)){
+        if(!snap.exists()||snap.data().papel!=='admin'){
+          await setDoc(doc(_db,'usuarios',user.uid),{uid:user.uid,email:user.email,nome:user.displayName||email.split('@')[0],papel:'admin',status:'aprovado',criadoEm:serverTimestamp()},{merge:true});
+          snap=await getDoc(doc(_db,'usuarios',user.uid));
+        }
+      } else if(!snap.exists()){window.location.replace('index.html');return;}
+      const dados=snap.data();
+      if(dados.status!=='aprovado'||!['lider','admin'].includes(dados.papel)){window.location.replace('index.html');return;}
       const nav=document.getElementById('dna-nav');
-      if(nav){nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>`<a href="${n.p}" class="dna-ni${n.p==='mapa.html'?' on':''}">`+`<span>${n.i}</span><span>${n.l}</span></a>`).join('');nav.classList.add('show');}
+      if(nav){nav.innerHTML=_NAV.filter(n=>n[3].includes(dados.papel)).map(n=>`<a href="${n[0]}" class="dna-ni${n[0]==='mapa.html'?' on':''}">`+`<span class="ni">${n[1]}</span><span>${n[2]}</span></a>`).join('');nav.classList.add('show');}
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
       loadFirebase();
-    } catch(e) { console.error(e); window.location.replace('index.html'); }
+    } catch(e){console.error('[Mapa Auth]',e);window.location.replace('index.html');}
   });
 }
-initAuth();
 
 /* FIREBASE + GOOGLE MAPS load */
 async function loadFirebase() {
   setTxt('Carregando dados...');
-  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
   const { getFirestore, collection, getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-  db = getFirestore(initializeApp(FB));
+  const _existingApps = getApps();
+  const _fbApp = _existingApps.length ? _existingApps[0] : initializeApp(FB);
+  db = getFirestore(_fbApp);
   try {
     const [cs, vs] = await Promise.all([
       getDocs(query(collection(db,'casas'), orderBy('timestamp','asc'))),
