@@ -135,7 +135,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:"Inter
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, getDocs, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, updateDoc, doc, getDoc, setDoc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const app = initializeApp({
@@ -151,42 +151,49 @@ const auth = getAuth(app);
 const gp = new GoogleAuthProvider();
 let allVisitantes=[], allCasas=[], minhaCasa=null;
 
+// ── BOOTSTRAP + NAV ──
+const _BOOTSTRAP=['dsdiegocoelho@gmail.com'];
 const _NAV=[
-  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
-  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
-  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
-  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
-  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
+  ['index.html','🌱','Cadastro',['voluntario','lider','admin']],
+  ['lider.html','🏠','Líder',['lider','admin']],
+  ['mapa.html','🗺️','Mapa',['lider','admin']],
+  ['feed.html','📸','Feed',['voluntario','lider','admin']],
+  ['admin.html','⚙️','Admin',['admin']],
 ];
-function _buildNav(papel,active){const nav=document.getElementById('dna-nav');if(!nav)return;nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>`<a href="${n.p}" class="dna-ni${n.p===active?' on':''}">`+`<span>${n.i}</span><span>${n.l}</span></a>`).join('');nav.classList.add('show');}
+function _buildNav(papel){
+  const nav=document.getElementById('dna-nav');
+  if(!nav)return;
+  nav.innerHTML=_NAV.filter(n=>n[3].includes(papel)).map(n=>
+    `<a href="${n[0]}" class="dna-ni${n[0]==='lider.html'?' on':''}">`+
+    `<span class="ni">${n[1]}</span><span>${n[2]}</span></a>`
+  ).join('');
+  nav.classList.add('show');
+}
 
+// ── AUTH ──
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.replace('index.html'); return; }
   try {
-    let snap = await getDocs? null : null;
-    const { getDoc, doc: fbDoc, setDoc, serverTimestamp: sts } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    snap = await getDoc(fbDoc(db,'usuarios',user.uid));
-    if(!snap.exists()){
-      await setDoc(fbDoc(db,'usuarios',user.uid),{uid:user.uid,email:user.email,nome:user.displayName||user.email.split('@')[0],papel:'voluntario',status:'pendente',criadoEm:sts()});
-      _showPending(); return;
+    const email=(user.email||'').toLowerCase();
+    let snap=await getDoc(doc(db,'usuarios',user.uid));
+    if(_BOOTSTRAP.includes(email)){
+      if(!snap.exists()||snap.data().papel!=='admin'){
+        await setDoc(doc(db,'usuarios',user.uid),{uid:user.uid,email:user.email,nome:user.displayName||email.split('@')[0],papel:'admin',status:'aprovado',criadoEm:serverTimestamp()},{merge:true});
+        snap=await getDoc(doc(db,'usuarios',user.uid));
+      }
+    } else if(!snap.exists()){
+      window.location.replace('index.html'); return;
     }
-    const d=snap.data();
-    if(d.status==='pendente'){_showPending();return;}
-    if(d.status==='rejeitado'){await signOut(auth);window.location.replace('index.html');return;}
-    if(!['lider','admin'].includes(d.papel)){window.location.replace('index.html');return;}
-    window._papel=d.papel; window._dados=d;
-    _buildNav(d.papel,'lider.html');
+    const dados=snap.data();
+    if(dados.status==='pendente'||dados.status==='rejeitado'){window.location.replace('index.html');return;}
+    if(!['lider','admin'].includes(dados.papel)){window.location.replace('index.html');return;}
+    window._papel=dados.papel;
+    _buildNav(dados.papel);
     document.getElementById('gate').classList.add('hidden');
     document.getElementById('app').style.display='block';
     await carregarDados(user.email);
-  } catch(e){ console.error(e); window.location.replace('index.html'); }
+  } catch(e){console.error('[Lider Auth]',e);window.location.replace('index.html');}
 });
-
-function _showPending(){
-  document.getElementById('gate').style.cssText='';
-  document.getElementById('gate').innerHTML=`<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.1em;color:#fff;margin-bottom:12px">Aguardando aprovação</div><div style="font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.5);text-align:center;max-width:260px;line-height:1.7">Seu acesso ainda não foi liberado pelo administrador.</div><button onclick="signOut(auth).then(()=>location.replace('index.html'))" style="margin-top:20px;background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);font-family:Inter,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:10px 20px;cursor:pointer">Sair</button>`;
-  document.getElementById('gate').classList.remove('hidden');
-}
 
 window.fazerLogin=async function(){
   const email=document.getElementById('gate-email').value.trim();
@@ -198,23 +205,17 @@ window.fazerLogin=async function(){
   try{await signInWithEmailAndPassword(auth,email,senha);}
   catch(e){err.textContent=tradErr(e.code);btn.disabled=false;btn.textContent='Entrar';}
 };
-
 window.loginGoogle=async function(){
   try{await signInWithPopup(auth,gp);}
   catch(e){if(e.code!=='auth/popup-closed-by-user')document.getElementById('gate-err').textContent=tradErr(e.code);}
 };
-
 window.esqueceuSenha=async function(){
   const email=document.getElementById('gate-email').value.trim();
   if(!email){document.getElementById('gate-err').textContent='Digite seu e-mail.';return;}
-  try{
-    await sendPasswordResetEmail(auth,email);
-    document.getElementById('gate-err').style.color='rgba(76,175,80,.9)';
-    document.getElementById('gate-err').textContent='✓ E-mail enviado!';
-  }catch(e){document.getElementById('gate-err').textContent=tradErr(e.code);}
+  try{await sendPasswordResetEmail(auth,email);document.getElementById('gate-err').style.color='rgba(76,175,80,.9)';document.getElementById('gate-err').textContent='✓ E-mail enviado!';}
+  catch(e){document.getElementById('gate-err').textContent=tradErr(e.code);}
 };
-
-window.fazerLogout=async function(){await signOut(auth);};
+window.fazerLogout=async function(){await signOut(auth);window.location.replace('index.html');};
 
 async function carregarDados(emailUser){
   try{
@@ -230,14 +231,14 @@ async function carregarDados(emailUser){
       renderVisitantes();
     } else {
       document.getElementById('header-casa').textContent='Painel do Líder';
-      document.getElementById('lista-visitantes').innerHTML='<div class="empty"><div class="empty-icon">🏠</div><div class="empty-title">Casa não encontrada</div><div class="empty-text">Seu e-mail não está vinculado a nenhuma casa. Peça ao admin para adicionar o campo Email do Líder no cadastro da sua casa.</div></div>';
+      document.getElementById('lista-visitantes').innerHTML='<div class="empty"><div class="empty-icon">🏠</div><div class="empty-title">Casa não vinculada</div><div class="empty-text">Peça ao admin para vincular seu e-mail à casa sacerdotal.</div></div>';
       document.getElementById('st-sugeridos').textContent='—';
       document.getElementById('st-pendentes').textContent='—';
     }
-  }catch(e){console.error(e);}
+  }catch(e){console.error('[Lider dados]',e);}
 }
 
-function words(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>3);}
+function words(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>3);}
 function sim(a,b){const wa=words(a),wb=words(b);return wa.filter(w=>wb.includes(w)).length;}
 
 function renderVisitantes(){
@@ -246,20 +247,16 @@ function renderVisitantes(){
   document.getElementById('st-sugeridos').textContent=sug.length;
   document.getElementById('st-pendentes').textContent=pend.length;
   document.getElementById('count-badge').textContent=sug.length;
-  if(!sug.length){
-    document.getElementById('lista-visitantes').innerHTML='<div class="empty"><div class="empty-icon">🌱</div><div class="empty-title">Nenhum visitante sugerido</div><div class="empty-text">Os visitantes próximos à sua casa aparecerão aqui.</div></div>';
-    return;
-  }
+  if(!sug.length){document.getElementById('lista-visitantes').innerHTML='<div class="empty"><div class="empty-icon">🌱</div><div class="empty-title">Nenhum visitante sugerido</div><div class="empty-text">Visitantes próximos à sua casa aparecerão aqui.</div></div>';return;}
   document.getElementById('lista-visitantes').innerHTML=sug.map(v=>buildCard(v)).join('');
 }
 
 const WA='<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>';
-
 function ini(n){const p=(n||'').trim().split(' ').filter(Boolean);return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():(p[0]||'?').slice(0,2).toUpperCase();}
 function alert48(v){if(!v.timestamp)return false;const ts=v.timestamp.seconds?v.timestamp.seconds*1000:new Date(v.timestamp).getTime();return(Date.now()-ts)>48*3600*1000&&!v.msg2Sent;}
 function dias(v){if(!v.timestamp)return null;const ts=v.timestamp.seconds?v.timestamp.seconds*1000:new Date(v.timestamp).getTime();return Math.floor((Date.now()-ts)/(1000*3600*24));}
-function m1(n){return `Oi ${n.split(' ')[0]}, tudo bem?\n\nQue alegria ter você com a gente na Terra Fértil!\n\nCom carinho, família Terra Fértil`;}
-function m2(n){return `Oi ${n.split(' ')[0]}!\n\nNos reunimos toda terça às 20h e domingo às 19h. Você é sempre bem-vindo(a).\n\nCom carinho, família Terra Fértil`;}
+function m1(n){const fn=n.split(' ')[0];return `${fn}! Que alegria ter você com a gente hoje! 2026 é o ano de Romper os Limites, e sua presença aqui não foi por acaso. A Terra Fértil é sua casa. Conta com a gente sempre! 🌱`;}
+function m2(n){const fn=n.split(' ')[0];return `${fn}, ainda pensando na sua presença com a gente no último culto. Foi lindo te ver por aqui! Toda terça às 20h e domingo às 19h tem culto na Terra Fértil. 2026 é tempo de Romper os Limites — você é sempre bem-vindo(a)! 🌱`;}
 
 function buildCard(v){
   const i=ini(v.nome);
@@ -302,14 +299,11 @@ window.salvarNota=async function(id){
   try{await updateDoc(doc(db,'visitantes',id),{notas:val});showToast('Nota salva!');}
   catch(e){showToast('Erro ao salvar.');}
 };
-
 window.marcar=async function(id,campo){
   try{const u={};u[campo]=true;await updateDoc(doc(db,'visitantes',id),u);const v=allVisitantes.find(x=>x.id===id);if(v)v[campo]=true;}
   catch(e){console.error(e);}
 };
-
 function tradErr(c){const e={'auth/invalid-credential':'E-mail ou senha incorretos.','auth/user-not-found':'Usuário não encontrado.','auth/wrong-password':'Senha incorreta.','auth/invalid-email':'E-mail inválido.','auth/too-many-requests':'Muitas tentativas.','auth/user-disabled':'Conta desativada.','auth/network-request-failed':'Sem conexão.'};return e[c]||'Erro. Tente novamente.';}
-
 let tt;function showToast(m){clearTimeout(tt);const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');tt=setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
