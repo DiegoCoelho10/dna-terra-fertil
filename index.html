@@ -97,7 +97,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 /* SCENE SHARED */
 .sc-num{font-size:clamp(10px,2.5vw,11px);letter-spacing:.4em;color:var(--rb);text-transform:uppercase;margin-bottom:clamp(14px,3.5vw,28px);opacity:0}
 .sc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,8.5vw,64px);letter-spacing:.05em;text-align:center;margin-bottom:clamp(14px,3.5vw,28px);opacity:0;line-height:1}
-.sc-body{font-family:'Crimson Pro',serif;font-size:clamp(16px,4.2vw,21px);line-height:1.72;color:var(--dim);max-width:min(520px,90vw);text-align:center;opacity:0}
+.sc-body{font-family:'Crimson Pro',serif;font-size:clamp(16px,4.2vw,21px);line-height:1.72;color:var(--dim);max-width:min(520px,90vw);text-align:center;opacity:1}
 .scene-bold{color:var(--w);font-weight:600}
 
 /* SCENE 1 */
@@ -110,7 +110,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 #s-s1.active .glitch-title::before{animation:glitch-r .07s steps(1) 4 .05s}
 #s-s1.active .glitch-title::after{animation:glitch-c .07s steps(1) 4 .05s}
 #s-s1.active .sc-num{animation:fade-up .5s .5s forwards}
-#s-s1.active .sc-body{animation:fade-up .6s .8s forwards}
+#s-s1.active .sc-body{}
 @keyframes glitch-m{0%{transform:translate(0)}25%{transform:translate(-5px,2px)}50%{transform:translate(5px,-2px)}75%{transform:translate(-3px,3px)}100%{transform:translate(0)}}
 @keyframes glitch-r{0%,100%{opacity:0}25%{opacity:1;transform:translate(6px)}50%{opacity:1;transform:translate(-4px)}75%{opacity:0}}
 @keyframes glitch-c{0%,100%{opacity:0}25%{opacity:1;transform:translate(-6px)}50%{opacity:1;transform:translate(4px)}75%{opacity:0}}
@@ -121,7 +121,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 #s-s2.active .sc-num{animation:fade-up .5s .1s forwards}
 #s-s2.active .sc-title{animation:fade-up .6s .3s forwards}
 #s-s2.active .quote-block{animation:fade-up .6s .55s forwards}
-#s-s2.active .sc-body{animation:fade-up .6s .82s forwards}
+#s-s2.active .sc-
 .quote-block{border-left:2px solid var(--rb);text-align:left;padding:clamp(14px,3.8vw,20px) clamp(14px,3.8vw,22px);max-width:min(520px,90vw);width:100%;background:rgba(139,23,23,.08);opacity:0;margin-bottom:clamp(12px,3vw,20px)}
 .quote-text{font-family:'Crimson Pro',serif;font-size:clamp(16px,4.2vw,21px);font-style:italic;color:rgba(255,255,255,.88);line-height:1.65}
 
@@ -253,7 +253,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .fb-dot{width:7px;height:7px;border-radius:50%;background:#f44336}
 .fb-dot.ok{background:#4caf50}
 
-@keyframes fade-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade-up{from{opacity:1;transform:none}to{opacity:1;transform:none}}
 
 /* ADMIN TRIGGER — long press 3s no canto */
 #admin-trigger{
@@ -493,26 +493,7 @@ document.getElementById('fb-dot').classList.add('ok');
 setTimeout(()=>document.getElementById('fb-status').style.opacity='0',4000);
 
 // ── NAV DINÂMICA POR PAPEL ──
-const _NAV=[
-  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
-  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
-  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
-  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
-  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
-];
-function buildNav(papel) {
-  const nav=document.getElementById('dna-nav');
-  if(!nav) return;
-  nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>
-    `<a href="${n.p}" class="dna-ni${n.p==='index.html'?' on':''}">`+
-    `<span>${n.i}</span><span>${n.l}</span></a>`
-  ).join('');
-  nav.classList.add('show');
-}
-
-// ── AUTH STATE ──
-// ── AUTH INDEX ──
-const _BOOTSTRAP = ['dsdiegocoelho@gmail.com'];
+// ── AUTH ──
 // ── AUTH ──
 const _BOOTSTRAP = ['dsdiegocoelho@gmail.com'];
 const _NAV_DEF = [
