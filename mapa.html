@@ -266,6 +266,7 @@ window.initMap = async function() {
     fullscreenControl: false
   });
   geocoder = new google.maps.Geocoder();
+  gmap.addListener('click', () => window.closePanel());
   // Igreja usa coordenadas fixas precisas — não geocodifica para evitar erro
   gmap.setCenter({lat:IGREJA.lat, lng:IGREJA.lng});
   plotIgreja();
@@ -474,7 +475,6 @@ function openVisitantePanel(v, coords) {
 
 function openPanel() { document.getElementById('panel').classList.add('open'); }
 window.closePanel = () => { document.getElementById('panel').classList.remove('open'); casaCircles.forEach(ci => ci.setMap(null)); casaCircles.length = 0; };
-  google.maps.event.addListener(gmap, 'click', () => window.closePanel());
 window.flyTo = (lat, lng) => { gmap.panTo({lat,lng}); gmap.setZoom(15); closePanel(); };
 
 /* NEAREST */
