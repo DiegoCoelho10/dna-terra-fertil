@@ -116,7 +116,6 @@ onAuthStateChanged(auth,async user=>{
   if(d.status==='rejeitado'){await signOut(auth);$('l-err').textContent='Acesso negado pelo administrador.';show('s-login');hide('s-app');hide('s-pend');return;}
   const p=d.papel||'voluntario';
   if(p==='lider'){window.location.href='lider.html';return;}
-  if(p==='admin'){window.location.href='admin.html';return;}
   hide('s-login');hide('s-pend');show('s-app','block');buildNav(p);
   $('u-info').textContent=`Olá, ${d.nome}`;
 });
