@@ -239,7 +239,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
     </div>
   </div>
 
-  <div class="tabs">
+  <div class="tabs" style="display:none">
     <button class="tab active" id="t-visitantes" onclick="switchTab('visitantes')">Visitantes</button>
     <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas</button>
     <button class="tab" id="t-usuarios" onclick="switchTab('usuarios')">👥 Usuários</button>
@@ -914,19 +914,22 @@ setInterval(loadAll,60000);
     <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:#fff">DNA · Admin</span>
     <button onclick="closeDrawer()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;line-height:1;padding:4px">×</button>
   </div>
-  <nav style="flex:1;padding:8px 0;overflow-y:auto">
-    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🌱</span> Cadastro</a>
-    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🏠</span> Líder</a>
-    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🗺️</span> Mapa</a>
-    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">📸</span> Feed</a>
-    <div style="height:1px;background:rgba(255,255,255,.06);margin:8px 0"></div>
-    <a href="admin.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:#D93A3A;text-decoration:none;font-family:Inter,sans-serif;font-size:14px;font-weight:600;border-left:3px solid #D93A3A;background:rgba(217,58,58,.06)"><span style="font-size:22px">⚙️</span> Admin</a>
-  </nav>
-  <div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
-    <button onclick="logout();closeDrawer()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.2)'" onmouseout="this.style.background='rgba(217,58,58,.1)'"><span style="font-size:18px">🚪</span> Sair da conta</button>
-  </div>
+ <nav style="flex:1;padding:8px 0;overflow-y:auto">
+    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Painel Admin</div>
+    <button onclick="switchTab('visitantes');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:rgba(217,58,58,.06);border:none;border-left:3px solid #D93A3A;color:#D93A3A;font-family:Inter,sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left"><span style="font-size:20px">📋</span> Visitantes</button>
+    <button onclick="switchTab('casas');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">🏠</span> Casas</button>
+    <button onclick="switchTab('usuarios');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">👥</span> Usuários</button>
+    <button onclick="switchTab('feed');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">📸</span> Feed Admin</button>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 0"></div>
+    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Páginas</div>
+    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🌱</span> Cadastro</a>
+    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">👤</span> Líder</a>
+    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🗺️</span> Mapa</a>
+    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">📸</span> Feed</a>
+</nav>
+<div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
+    <button onclick="logout();closeDrawer()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px"><span style="font-size:18px">🚪</span> Sair da conta</button>
 </div>
-
 <script>
 function openDrawer(){document.getElementById('drw').style.transform='translateX(0)';document.getElementById('drw-overlay').style.display='block';}
 function closeDrawer(){document.getElementById('drw').style.transform='translateX(100%)';document.getElementById('drw-overlay').style.display='none';}
