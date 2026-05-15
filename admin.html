@@ -429,24 +429,6 @@ const googleProvider = new GoogleAuthProvider();
 
 let allVisitors=[], allCasas=[], filteredVisitors=[], tagFilter='all', currentTab='visitantes';
 
-// ── NAV DINÂMICA ──
-const _NAV=[
-  {p:'index.html',i:'🌱',l:'Cadastro',r:['voluntario','lider','admin']},
-  {p:'lider.html',i:'🏠',l:'Líder',r:['lider','admin']},
-  {p:'mapa.html',i:'🗺️',l:'Mapa',r:['lider','admin']},
-  {p:'feed.html',i:'📸',l:'Feed',r:['voluntario','lider','admin']},
-  {p:'admin.html',i:'⚙️',l:'Admin',r:['admin']},
-];
-function _buildNav(papel, active) {
-  const nav=document.getElementById('dna-nav');
-  if(!nav) return;
-  nav.innerHTML=_NAV.filter(n=>n.r.includes(papel)).map(n=>
-    `<a href="${n.p}" class="dna-ni${n.p===active?' on':''}">`+
-    `<span>${n.i}</span><span>${n.l}</span></a>`
-  ).join('');
-  nav.classList.add('show');
-}
-
 /* ── AUTH ── */
 // ── AUTH ADMIN ──
 const _BOOTSTRAP = ['dsdiegocoelho@gmail.com'];
