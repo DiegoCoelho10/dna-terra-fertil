@@ -104,7 +104,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .heart-burst{position:fixed;pointer-events:none;font-size:28px;z-index:9999;animation:heartBurst .7s ease-out forwards}
 @keyframes heartBurst{0%{transform:scale(0) translateY(0);opacity:1}60%{transform:scale(1.4) translateY(-30px);opacity:1}100%{transform:scale(1) translateY(-60px);opacity:0}}
 #dna-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);border-top:1px solid rgba(255,255,255,.08);display:none;align-items:center;justify-content:space-around;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:9000}
-#dna-nav.show{display:flex}
+#dna-nav.show{display:none}
 .dna-ni{display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.3);text-decoration:none;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;min-width:52px;border:none;background:none;cursor:pointer;-webkit-appearance:none}
 .dna-ni:hover,.dna-ni.on{color:#D93A3A}
 .dna-ni span:first-child{font-size:19px;line-height:1}
@@ -372,6 +372,31 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+</script>
+  <div id="drw-ov" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9990;backdrop-filter:blur(2px)"></div>
+<div id="drw" style="position:fixed;right:0;top:0;bottom:0;width:min(280px,85vw);background:#0e0e0e;border-left:1px solid rgba(217,58,58,.2);z-index:9991;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column">
+  <div style="padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:#fff">DNA</span>
+    <button onclick="closeDrawer()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer">×</button>
+  </div>
+  <nav id="drw-nav" style="flex:1;padding:8px 0;overflow-y:auto"></nav>
+  <div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
+    <button onclick="sair()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px"><span style="font-size:18px">🚪</span> Sair da conta</button>
+  </div>
+</div>
+<script>
+function openDrawer(){document.getElementById('drw').style.transform='translateX(0)';document.getElementById('drw-ov').style.display='block';}
+function closeDrawer(){document.getElementById('drw').style.transform='translateX(100%)';document.getElementById('drw-ov').style.display='none';}
+function buildDrawer(papel,active){
+  const all=[
+    {href:'index.html',icon:'🌱',label:'Cadastro',roles:['voluntario','lider','admin']},
+    {href:'lider.html',icon:'👤',label:'Líder',roles:['lider','admin']},
+    {href:'mapa.html',icon:'🗺️',label:'Mapa',roles:['lider','admin']},
+    {href:'feed.html',icon:'📸',label:'Feed',roles:['voluntario','lider','admin']},
+    {href:'admin.html',icon:'⚙️',label:'Admin',roles:['admin']},
+  ];
+  document.getElementById('drw-nav').innerHTML=all.filter(i=>i.roles.includes(papel)).map(i=>`<a href="${i.href}" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:${i.href===active?'#D93A3A':'rgba(255,255,255,.65)'};text-decoration:none;font-family:Inter,sans-serif;font-size:14px;font-weight:${i.href===active?600:400};border-left:3px solid ${i.href===active?'#D93A3A':'transparent'};background:${i.href===active?'rgba(217,58,58,.06)':'none'}"><span style="font-size:20px">${i.icon}</span> ${i.label}</a>`).join('');
 }
 </script>
 </body>
