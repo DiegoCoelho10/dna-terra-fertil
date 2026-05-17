@@ -61,6 +61,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
 .tabs{display:flex;border-bottom:1px solid var(--border);background:rgba(8,8,8,.8);position:sticky;top:49px;z-index:99;flex-shrink:0}
 .tab{flex:1;padding:12px 8px;text-align:center;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;-webkit-appearance:none;background:none;border-top:none;border-left:none;border-right:none;min-height:42px}
 .tab.active{color:var(--w);border-bottom-color:var(--rb)}
+.tabs{display:none!important}
 
 /* STATS */
 .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
@@ -449,6 +450,16 @@ window.switchTab = function(tab) {
   });
   ['t-visitantes','t-casas','t-usuarios','t-feed'].forEach(id=>{
     document.getElementById(id)?.classList.remove('active');
+  });
+  // Atualiza drawer active state
+  ['drw-visitantes','drw-casas','drw-usuarios','drw-feed'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const isActive = id === 'drw-'+tab;
+    el.style.background = isActive ? 'rgba(217,58,58,.06)' : 'none';
+    el.style.borderLeft = isActive ? '3px solid #D93A3A' : '3px solid transparent';
+    el.style.color = isActive ? '#D93A3A' : 'rgba(255,255,255,.65)';
+    el.style.fontWeight = isActive ? '600' : '400';
   });
   // Mostra aba selecionada com flex correto
   const tabEl = document.getElementById('tab-'+tab);
@@ -914,13 +925,18 @@ setInterval(loadAll,60000);
     <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:#fff">DNA · Admin</span>
     <button onclick="closeDrawer()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;line-height:1;padding:4px">×</button>
   </div>
-  <nav style="flex:1;padding:8px 0;overflow-y:auto">
-    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🌱</span> Cadastro</a>
-    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🏠</span> Líder</a>
-    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🗺️</span> Mapa</a>
-    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">📸</span> Feed</a>
-    <div style="height:1px;background:rgba(255,255,255,.06);margin:8px 0"></div>
-    <a href="admin.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:#D93A3A;text-decoration:none;font-family:Inter,sans-serif;font-size:14px;font-weight:600;border-left:3px solid #D93A3A;background:rgba(217,58,58,.06)"><span style="font-size:22px">⚙️</span> Admin</a>
+  <nav id="drw-nav-inner" style="flex:1;padding:8px 0;overflow-y:auto">
+    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Painel Admin</div>
+    <button id="drw-visitantes" onclick="switchTab('visitantes');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:rgba(217,58,58,.06);border:none;border-left:3px solid #D93A3A;color:#D93A3A;font-family:Inter,sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left"><span style="font-size:20px">📋</span> Visitantes</button>
+    <button id="drw-casas" onclick="switchTab('casas');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">🏠</span> Casas</button>
+    <button id="drw-usuarios" onclick="switchTab('usuarios');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">👥</span> Usuários</button>
+    <button id="drw-feed" onclick="switchTab('feed');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">📸</span> Feed Admin</button>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 0"></div>
+    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Outras páginas</div>
+    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🌱</span> Cadastro de Visitante</a>
+    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">👤</span> Painel Líder</a>
+    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🗺️</span> Mapa</a>
+    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">📸</span> Feed da Igreja</a>
   </nav>
   <div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
     <button onclick="logout();closeDrawer()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.2)'" onmouseout="this.style.background='rgba(217,58,58,.1)'"><span style="font-size:18px">🚪</span> Sair da conta</button>
