@@ -239,7 +239,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--w);font-family:'Inter
     </div>
   </div>
 
-  <div class="tabs" style="display:none">
+  <div class="tabs">
     <button class="tab active" id="t-visitantes" onclick="switchTab('visitantes')">Visitantes</button>
     <button class="tab" id="t-casas" onclick="switchTab('casas')">Casas</button>
     <button class="tab" id="t-usuarios" onclick="switchTab('usuarios')">👥 Usuários</button>
@@ -563,10 +563,12 @@ function renderVisitors(list) {
 }
 
 const waIcon=`<svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.395 5.61L0 24l6.562-1.376A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.878 9.878 0 0 1-5.031-1.373l-.361-.214-3.735.979.998-3.648-.235-.374A9.859 9.859 0 0 1 2.106 12C2.106 6.53 6.53 2.106 12 2.106S21.894 6.53 21.894 12 17.47 21.894 12 21.894z"/></svg>`;
-function initials(n){const p=(n||'').trim().split(' ').filter(Boolean);return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():(p[0]||'?').slice(0,2).toUpperCasefunction msg1(nome){const n=nome.split(' ')[0];return `Oi ${n}! 🌱\n\nQue alegria você ter vindo hoje! A gente ficou muito feliz em te receber.\n\nA Terra Fértil é uma família, e hoje você fez parte dela.\n\nTe esperamos sempre! 🤍`;} msg1(nome){const n=nome.split(' ')[0];return `${n}! Que alegria ter você com a gente hoje! 2026 é o ano de Romper os Limites, e sua presença aqui não foi por acaso. A Terra Fértil é sua casa. Conta com a gente sempre! 🌱`;}
+function initials(n){const p=(n||'').trim().split(' ').filter(Boolean);return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():(p[0]||'?').slice(0,2).toUpperCase();}
+function msg1(nome){const n=nome.split(' ')[0];return `Oi ${n}! 🌱\n\nQue alegria você ter vindo hoje! A gente ficou muito feliz em te receber.\n\nA Terra Fértil é uma família, e hoje você fez parte dela.\n\nTe esperamos sempre! 🤍`;}
 function msg2(nome){const n=nome.split(' ')[0];return `Oi ${n}! 🌱\n\nA gente ainda está pensando na sua presença aqui com a gente. Foi muito bom te ter!\n\nSaudade já! 😄\n\nSe quiser voltar, tem culto toda terça às 20h e todo domingo às 19h. Vai ser uma alegria te ver de novo!`;}
 function msgTerca(nome){const n=nome.split(' ')[0];return `Oi ${n}! 🌱\n\nHoje tem culto aqui na Terra Fértil e a gente queria te convidar!\n\n📍 Rua Augusto de Castro, 4 — Inhoaíba\n🕗 20h\n\nVem? A família te espera! 🤍`;}
 function msgDomingo(nome){const n=nome.split(' ')[0];return `Oi ${n}! 🌱\n\nDomingo é dia de família aqui na Terra Fértil, e você faz falta!\n\n📍 Rua Augusto de Castro, 4 — Inhoaíba\n🕖 19h\n\nA gente te espera com alegria! 🤍`;}
+
 function buildCard(v) {
   const ini=initials(v.nome);
   const hasCel=v.celular&&v.celular.length>0;
@@ -912,22 +914,19 @@ setInterval(loadAll,60000);
     <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:#fff">DNA · Admin</span>
     <button onclick="closeDrawer()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;line-height:1;padding:4px">×</button>
   </div>
- <nav style="flex:1;padding:8px 0;overflow-y:auto">
-    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Painel Admin</div>
-    <button onclick="switchTab('visitantes');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:rgba(217,58,58,.06);border:none;border-left:3px solid #D93A3A;color:#D93A3A;font-family:Inter,sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left"><span style="font-size:20px">📋</span> Visitantes</button>
-    <button onclick="switchTab('casas');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">🏠</span> Casas</button>
-    <button onclick="switchTab('usuarios');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">👥</span> Usuários</button>
-    <button onclick="switchTab('feed');closeDrawer()" style="display:flex;align-items:center;gap:14px;padding:14px 20px;width:100%;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;text-align:left"><span style="font-size:20px">📸</span> Feed Admin</button>
-    <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 0"></div>
-    <div style="padding:8px 16px 4px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25)">Páginas</div>
-    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🌱</span> Cadastro</a>
-    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">👤</span> Líder</a>
-    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">🗺️</span> Mapa</a>
-    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent"><span style="font-size:20px">📸</span> Feed</a>
-</nav>
-<div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
-    <button onclick="logout();closeDrawer()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px"><span style="font-size:18px">🚪</span> Sair da conta</button>
+  <nav style="flex:1;padding:8px 0;overflow-y:auto">
+    <a href="index.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🌱</span> Cadastro</a>
+    <a href="lider.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🏠</span> Líder</a>
+    <a href="mapa.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">🗺️</span> Mapa</a>
+    <a href="feed.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:rgba(255,255,255,.65);text-decoration:none;font-family:Inter,sans-serif;font-size:14px;border-left:3px solid transparent;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.08)';this.style.borderLeftColor='#D93A3A';this.style.color='#fff'" onmouseout="this.style.background='';this.style.borderLeftColor='transparent';this.style.color='rgba(255,255,255,.65)'"><span style="font-size:22px">📸</span> Feed</a>
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:8px 0"></div>
+    <a href="admin.html" style="display:flex;align-items:center;gap:14px;padding:16px 20px;color:#D93A3A;text-decoration:none;font-family:Inter,sans-serif;font-size:14px;font-weight:600;border-left:3px solid #D93A3A;background:rgba(217,58,58,.06)"><span style="font-size:22px">⚙️</span> Admin</a>
+  </nav>
+  <div style="padding:16px;border-top:1px solid rgba(255,255,255,.08)">
+    <button onclick="logout();closeDrawer()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px;transition:all .2s" onmouseover="this.style.background='rgba(217,58,58,.2)'" onmouseout="this.style.background='rgba(217,58,58,.1)'"><span style="font-size:18px">🚪</span> Sair da conta</button>
+  </div>
 </div>
+
 <script>
 function openDrawer(){document.getElementById('drw').style.transform='translateX(0)';document.getElementById('drw-overlay').style.display='block';}
 function closeDrawer(){document.getElementById('drw').style.transform='translateX(100%)';document.getElementById('drw-overlay').style.display='none';}
