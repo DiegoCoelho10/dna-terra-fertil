@@ -235,10 +235,15 @@ onAuthStateChanged(auth,async user=>{
     const d=snap.data();
     if(d.status==='pendente'){hideLoading();$('s-login').style.display='none';$('s-pend').style.display='flex';return;}
     if(d.status==='rejeitado'){await signOut(auth);showLogin();$('l-err').textContent='Acesso negado pelo administrador.';return;}
-    // Redireciona por papel
-    if(d.papel==='admin'){window.location.replace('admin.html');return;}
-    if(d.papel==='lider'){window.location.replace('lider.html');return;}
-    // voluntario
+    // Admin e líder podem acessar o cadastro diretamente
+    // Só redireciona se NÃO veio pelo link "Cadastro de Visitante"
+    const params=new URLSearchParams(window.location.search);
+    const forceCadastro=params.has('cadastro');
+    if(!forceCadastro){
+      if(d.papel==='admin'){window.location.replace('admin.html');return;}
+      if(d.papel==='lider'){window.location.replace('lider.html');return;}
+    }
+    // voluntario, admin com ?cadastro, líder com ?cadastro
     hideLoading();
     $('s-login').style.display='none';
     $('s-pend').style.display='none';
