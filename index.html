@@ -154,7 +154,7 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getAuth,signInWithPopup,GoogleAuthProvider,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import{getAuth,signInWithRedirect,getRedirectResult,GoogleAuthProvider,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import{getFirestore,doc,getDoc,setDoc,addDoc,collection,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB={apiKey:"AIzaSyC46bONBdDeVbK4e7E_zIgveEokleOpKa4",authDomain:"dna-terra-fertil.firebaseapp.com",projectId:"dna-terra-fertil",storageBucket:"dna-terra-fertil.firebasestorage.app",messagingSenderId:"937958327076",appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"};
@@ -162,6 +162,9 @@ const BOOT=['dsdiegocoelho@gmail.com'];
 
 const app=initializeApp(FB),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
+
+// Processa retorno do redirect Google
+getRedirectResult(auth).catch(()=>{});
 
 function limparForm(){
   ['f-nome','f-cel','f-end'].forEach(id=>$(id).value='');
@@ -173,16 +176,9 @@ $('btn-ok').onclick=fecharModal;
 $('btn-novo').onclick=()=>{fecharModal();$('f-nome').focus();};
 $('success-overlay').onclick=(e)=>{if(e.target===$('success-overlay'))fecharModal();};
 
-// Trata o retorno do redirect ao carregar a página
-import{getRedirectResult}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
-getRedirectResult(auth).catch(()=>{});
-
 $('btn-google').onclick=async()=>{
-  try{
-    const{signInWithRedirect}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-    await signInWithRedirect(auth,new GoogleAuthProvider());
-  }catch(e){$('l-err').textContent='Erro ao entrar. Tente novamente.';}
+  try{await signInWithRedirect(auth,new GoogleAuthProvider());}
+  catch(e){$('l-err').textContent='Erro ao entrar. Tente novamente.';}
 };
 $('btn-sair').onclick=()=>signOut(auth);
 
