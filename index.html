@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>DNA · Terra Fértil</title>
 <link rel="manifest" href="manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -10,9 +11,15 @@
 :root{--r:#E53935;--dark:#080808;--card:#111;--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.85);--muted:rgba(255,255,255,.4)}
 html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inter',sans-serif}
 
-/* LOGIN */
-#s-login{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;gap:32px}
-#s-login.show{display:flex}
+/* LOADING — flutua POR CIMA, some depois */
+#loading{position:fixed;inset:0;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9999;transition:opacity .3s}
+#loading.hide{opacity:0;pointer-events:none}
+.sp{width:36px;height:36px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--r);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-size:13px;color:rgba(255,255,255,.35)}
+
+/* LOGIN — visível por padrão embaixo do loading */
+#s-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;gap:32px}
 .l-dna{font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:.1em;color:#fff;line-height:1}
 .l-div{width:40px;height:2px;background:var(--r)}
 .l-sub{font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--muted)}
@@ -20,37 +27,34 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
 .l-title{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .btn-g{display:flex;align-items:center;gap:12px;background:#fff;color:#333;border:none;border-radius:10px;padding:14px 24px;font-size:14px;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:.2s;font-family:'Inter',sans-serif}
 .btn-g:hover{background:#f0f0f0}
+.btn-g:disabled{opacity:.6;cursor:not-allowed}
 .btn-g svg{width:20px;height:20px;flex-shrink:0}
 .l-err{font-size:12px;color:#ef5350;text-align:center;min-height:16px}
 
 /* PENDENTE */
 #s-pend{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;gap:20px;text-align:center}
-.p-icon{font-size:56px}.p-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.1em}
+.p-icon{font-size:56px}
+.p-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.1em}
 .p-msg{font-size:14px;color:var(--muted);max-width:280px;line-height:1.6}
-.btn-sair{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:pointer;margin-top:8px;transition:.2s}
-.btn-sair:hover{border-color:var(--r);color:var(--r)}
+.btn-sair{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:pointer;margin-top:8px}
 
 /* APP */
 #s-app{display:none}
 .app-header{background:rgba(8,8,8,.97);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
 .app-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:#fff}
 .app-sub{font-size:11px;color:var(--muted);margin-left:8px;font-style:italic}
-.app-body{padding:24px 16px 40px}
+.app-body{padding:24px 16px 48px}
 .pt{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em;color:#fff;margin-bottom:4px}
 .ps{font-size:12px;color:var(--muted);margin-bottom:24px}
 .fc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px}
 .fl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
-.fi,.fs{background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;width:100%;transition:.2s;outline:none}
-.fi:focus,.fs:focus{border-color:var(--r)}.fs option{background:#1a1a1a}
+.fi,.fs{background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;width:100%;outline:none;transition:.2s}
+.fi:focus,.fs:focus{border-color:var(--r)}
+.fs option{background:#1a1a1a}
 .btn-s{background:var(--r);border:none;border-radius:10px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;width:100%}
-.btn-s:hover{background:#C62828}.btn-s:disabled{opacity:.5;cursor:not-allowed}
+.btn-s:disabled{opacity:.5;cursor:not-allowed}
 
-/* LOADING */
-#loading{position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;z-index:999}
-.sp{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--r);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* MODAL DE SUCESSO */
+/* MODAL SUCESSO */
 #success-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:500;padding:24px;backdrop-filter:blur(4px)}
 #success-overlay.show{display:flex}
 #success-box{background:#111;border:1px solid rgba(76,175,80,.3);border-radius:20px;padding:36px 28px;width:100%;max-width:340px;text-align:center;animation:popIn .4s cubic-bezier(.16,1,.3,1)}
@@ -62,17 +66,19 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
 .success-msg{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
 .success-detail{background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.15);border-radius:10px;padding:10px 14px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:24px;text-align:left;display:flex;flex-direction:column;gap:4px}
 .success-detail span{display:flex;align-items:center;gap:6px}
-.btn-ok{background:rgba(76,175,80,.2);border:1px solid rgba(76,175,80,.4);color:#4caf50;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-radius:10px;cursor:pointer;width:100%;transition:.2s}
-.btn-ok:hover{background:rgba(76,175,80,.3);color:#fff}
-.btn-novo{background:var(--r);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-radius:10px;cursor:pointer;width:100%;transition:.2s;margin-top:8px}
-.btn-novo:hover{background:#C62828}
+.btn-ok{background:rgba(76,175,80,.2);border:1px solid rgba(76,175,80,.4);color:#4caf50;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-radius:10px;cursor:pointer;width:100%}
+.btn-novo{background:var(--r);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:14px;border-radius:10px;cursor:pointer;width:100%;margin-top:8px}
 </style>
 </head>
 <body>
 
-<div id="loading"><div class="sp"></div></div>
+<!-- LOADING por cima -->
+<div id="loading">
+  <div class="sp"></div>
+  <div class="load-txt">Verificando acesso...</div>
+</div>
 
-<!-- LOGIN -->
+<!-- LOGIN visível por padrão -->
 <div id="s-login">
   <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
     <div class="l-dna">DNA</div>
@@ -89,7 +95,7 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
   </div>
 </div>
 
-<!-- AGUARDANDO APROVAÇÃO -->
+<!-- PENDENTE -->
 <div id="s-pend">
   <div class="p-icon">⏳</div>
   <div class="p-title">Aguardando Aprovação</div>
@@ -97,7 +103,7 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
   <button class="btn-sair" id="btn-sair">Sair da conta</button>
 </div>
 
-<!-- FORMULÁRIO DE CADASTRO -->
+<!-- FORMULÁRIO -->
 <div id="s-app">
   <div class="app-header">
     <div style="display:flex;align-items:center">
@@ -135,7 +141,7 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
   </div>
 </div>
 
-<!-- MODAL DE SUCESSO -->
+<!-- MODAL SUCESSO -->
 <div id="success-overlay">
   <div id="success-box">
     <div class="success-icon">🌱</div>
@@ -154,7 +160,7 @@ html,body{height:100%;background:var(--dark);color:var(--text);font-family:'Inte
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getAuth,signInWithRedirect,getRedirectResult,GoogleAuthProvider,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import{getAuth,signInWithPopup,signInWithRedirect,getRedirectResult,GoogleAuthProvider,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import{getFirestore,doc,getDoc,setDoc,addDoc,collection,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB={apiKey:"AIzaSyC46bONBdDeVbK4e7E_zIgveEokleOpKa4",authDomain:"dna-terra-fertil.firebaseapp.com",projectId:"dna-terra-fertil",storageBucket:"dna-terra-fertil.firebasestorage.app",messagingSenderId:"937958327076",appId:"1:937958327076:web:07a7ace0e689e08f0ae9b1"};
@@ -162,10 +168,18 @@ const BOOT=['dsdiegocoelho@gmail.com'];
 
 const app=initializeApp(FB),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
+const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// Processa retorno do redirect Google
-getRedirectResult(auth).catch(()=>{});
-
+function hideLoading(){
+  $('loading').classList.add('hide');
+  setTimeout(()=>$('loading').style.display='none',350);
+}
+function showLogin(){
+  hideLoading();
+  $('s-login').style.display='flex';
+  $('s-pend').style.display='none';
+  $('s-app').style.display='none';
+}
 function limparForm(){
   ['f-nome','f-cel','f-end'].forEach(id=>$(id).value='');
   $('f-origem').value='';$('f-primeira').value='';
@@ -174,105 +188,80 @@ function fecharModal(){$('success-overlay').classList.remove('show');}
 
 $('btn-ok').onclick=fecharModal;
 $('btn-novo').onclick=()=>{fecharModal();$('f-nome').focus();};
-$('success-overlay').onclick=(e)=>{if(e.target===$('success-overlay'))fecharModal();};
-
-$('btn-google').onclick=async()=>{
-  try{await signInWithRedirect(auth,new GoogleAuthProvider());}
-  catch(e){$('l-err').textContent='Erro ao entrar. Tente novamente.';}
-};
+$('success-overlay').onclick=e=>{if(e.target===$('success-overlay'))fecharModal();};
 $('btn-sair').onclick=()=>signOut(auth);
-
-// Expõe sair para o drawer
 window.sair=()=>signOut(auth);
 
+// Processa redirect anterior se houver
+getRedirectResult(auth).catch(()=>{});
+
+// Login Google — popup no desktop, redirect no mobile
+$('btn-google').onclick=async()=>{
+  const btn=$('btn-google');
+  btn.disabled=true;btn.textContent='Aguarde...';
+  $('l-err').textContent='';
+  try{
+    if(isMobile){
+      await signInWithRedirect(auth,new GoogleAuthProvider());
+    } else {
+      await signInWithPopup(auth,new GoogleAuthProvider());
+    }
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Entrar com Google`;
+    if(e.code==='auth/popup-blocked'){
+      await signInWithRedirect(auth,new GoogleAuthProvider());
+    } else if(e.code!=='auth/popup-closed-by-user'){
+      $('l-err').textContent='Erro ao entrar. Tente novamente.';
+    }
+  }
+};
+
 onAuthStateChanged(auth,async user=>{
-  $('loading').style.display='none';
-
-  if(!user){
-    $('s-login').classList.add('show');
-    $('s-app').style.display='none';
-    $('s-pend').style.display='none';
-    return;
-  }
-
-  const ref=doc(db,'usuarios',user.uid);
-  let snap=await getDoc(ref);
-
-  if(!snap.exists()){
+  if(!user){showLogin();return;}
+  try{
+    const ref=doc(db,'usuarios',user.uid);
+    let snap=await getDoc(ref);
+    if(!snap.exists()){
+      const isB=BOOT.includes((user.email||'').toLowerCase());
+      await setDoc(ref,{uid:user.uid,email:user.email,nome:user.displayName||user.email.split('@')[0],foto:user.photoURL||'',papel:isB?'admin':'voluntario',status:isB?'aprovado':'pendente',criadoEm:serverTimestamp()});
+      snap=await getDoc(ref);
+    }
     const isB=BOOT.includes((user.email||'').toLowerCase());
-    await setDoc(ref,{uid:user.uid,email:user.email,nome:user.displayName||user.email.split('@')[0],foto:user.photoURL||'',papel:isB?'admin':'voluntario',status:isB?'aprovado':'pendente',criadoEm:serverTimestamp()});
-    snap=await getDoc(ref);
-  }
-
-  const isB=BOOT.includes((user.email||'').toLowerCase());
-  if(isB&&(snap.data().papel!=='admin'||snap.data().status!=='aprovado')){
-    await setDoc(ref,{papel:'admin',status:'aprovado'},{merge:true});
-    snap=await getDoc(ref);
-  }
-
-  const d=snap.data();
-
-  if(d.status==='pendente'){
-    $('s-login').classList.remove('show');
-    $('s-app').style.display='none';
-    $('s-pend').style.display='flex';
-    return;
-  }
-
-  if(d.status==='rejeitado'){
-    await signOut(auth);
-    $('l-err').textContent='Acesso negado pelo administrador.';
-    $('s-login').classList.add('show');
-    $('s-app').style.display='none';
+    if(isB&&(snap.data().papel!=='admin'||snap.data().status!=='aprovado')){
+      await setDoc(ref,{papel:'admin',status:'aprovado'},{merge:true});
+      snap=await getDoc(ref);
+    }
+    const d=snap.data();
+    if(d.status==='pendente'){hideLoading();$('s-login').style.display='none';$('s-pend').style.display='flex';return;}
+    if(d.status==='rejeitado'){await signOut(auth);showLogin();$('l-err').textContent='Acesso negado pelo administrador.';return;}
+    // Redireciona por papel
+    if(d.papel==='admin'){window.location.replace('admin.html');return;}
+    if(d.papel==='lider'){window.location.replace('lider.html');return;}
+    // voluntario
+    hideLoading();
+    $('s-login').style.display='none';
     $('s-pend').style.display='none';
-    return;
+    $('s-app').style.display='block';
+    $('u-info').textContent=`Olá, ${d.nome} 👋`;
+    buildDrawer(d.papel,'index.html');
+  }catch(e){
+    console.error('[DNA]',e);
+    showLogin();
+    $('l-err').textContent='Erro de conexão. Tente novamente.';
   }
-
-  // ── REDIRECIONAMENTO POR PAPEL ──
-  if(d.papel==='admin'){
-    window.location.replace('admin.html');
-    return;
-  }
-  if(d.papel==='lider'){
-    window.location.replace('lider.html');
-    return;
-  }
-
-  // voluntario → fica no cadastro
-  $('s-login').classList.remove('show');
-  $('s-pend').style.display='none';
-  $('s-app').style.display='block';
-  $('u-info').textContent=`Olá, ${d.nome} 👋`;
-  buildDrawer(d.papel,'index.html');
 });
 
 $('btn-salvar').onclick=async()=>{
   const nome=$('f-nome').value.trim();
-  if(!nome){
-    $('f-nome').style.borderColor='#ef5350';
-    $('f-nome').placeholder='⚠ Preencha o nome!';
-    setTimeout(()=>{$('f-nome').style.borderColor='';$('f-nome').placeholder='Nome completo do visitante';},2000);
-    return;
-  }
-  const btn=$('btn-salvar');
-  btn.disabled=true;btn.textContent='Salvando...';
+  if(!nome){$('f-nome').style.borderColor='#ef5350';setTimeout(()=>$('f-nome').style.borderColor='',2000);return;}
+  const btn=$('btn-salvar');btn.disabled=true;btn.textContent='Salvando...';
   try{
     const agora=new Date();
     const dataFormatada=agora.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
     const horaFormatada=agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const primeiraVez=$('f-primeira').value==='sim';
-    await addDoc(collection(db,'visitantes'),{
-      nome,
-      celular:$('f-cel').value.trim()||null,
-      endereco:$('f-end').value.trim()||null,
-      origem:$('f-origem').value||null,
-      primeiraVez,
-      culto:dataFormatada,
-      horario:horaFormatada,
-      cadastradoPor:auth.currentUser?.email||'',
-      timestamp:serverTimestamp(),
-      criadoEm:serverTimestamp()
-    });
+    await addDoc(collection(db,'visitantes'),{nome,celular:$('f-cel').value.trim()||null,endereco:$('f-end').value.trim()||null,origem:$('f-origem').value||null,primeiraVez,culto:dataFormatada,horario:horaFormatada,cadastradoPor:auth.currentUser?.email||'',timestamp:serverTimestamp(),criadoEm:serverTimestamp()});
     if(navigator.vibrate)navigator.vibrate([100,50,200,50,100]);
     $('sc-nome').textContent=nome;
     $('sc-data').textContent=dataFormatada.charAt(0).toUpperCase()+dataFormatada.slice(1);
@@ -280,12 +269,8 @@ $('btn-salvar').onclick=async()=>{
     $('sc-tipo').textContent=primeiraVez?'Primeira visita na Terra Fértil! 🎉':'Retorno — que alegria! 🙌';
     $('success-overlay').classList.add('show');
     limparForm();
-  }catch(e){
-    alert('Erro ao salvar. Verifique sua conexão.');
-    console.error(e);
-  }finally{
-    btn.disabled=false;btn.textContent='🌱 Registrar Visitante';
-  }
+  }catch(e){alert('Erro ao salvar. Verifique sua conexão.');console.error(e);}
+  finally{btn.disabled=false;btn.textContent='🌱 Registrar Visitante';}
 };
 </script>
 
@@ -301,20 +286,14 @@ $('btn-salvar').onclick=async()=>{
     <button onclick="sair()" style="display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:rgba(217,58,58,.1);border:1px solid rgba(217,58,58,.2);color:rgba(255,120,120,.85);font-family:Inter,sans-serif;font-size:13px;cursor:pointer;border-radius:6px"><span style="font-size:18px">🚪</span> Sair da conta</button>
   </div>
 </div>
-
 <script>
 function openDrawer(){document.getElementById('drw').style.transform='translateX(0)';document.getElementById('drw-ov').style.display='block';}
 function closeDrawer(){document.getElementById('drw').style.transform='translateX(100%)';document.getElementById('drw-ov').style.display='none';}
 function buildDrawer(papel,active){
-  const all=[
-    {href:'index.html',icon:'🌱',label:'Cadastro',roles:['voluntario','lider','admin']},
-    {href:'lider.html',icon:'👤',label:'Líder',roles:['lider','admin']},
-    {href:'mapa.html',icon:'🗺️',label:'Mapa',roles:['lider','admin']},
-    {href:'feed.html',icon:'📸',label:'Feed',roles:['voluntario','lider','admin']},
-    {href:'admin.html',icon:'⚙️',label:'Admin',roles:['admin']},
-  ];
+  const all=[{href:'index.html',icon:'🌱',label:'Cadastro',roles:['voluntario','lider','admin']},{href:'lider.html',icon:'👤',label:'Líder',roles:['lider','admin']},{href:'mapa.html',icon:'🗺️',label:'Mapa',roles:['lider','admin']},{href:'feed.html',icon:'📸',label:'Feed',roles:['voluntario','lider','admin']},{href:'admin.html',icon:'⚙️',label:'Admin',roles:['admin']}];
   document.getElementById('drw-nav').innerHTML=all.filter(i=>i.roles.includes(papel)).map(i=>`<a href="${i.href}" style="display:flex;align-items:center;gap:14px;padding:14px 20px;color:${i.href===active?'#D93A3A':'rgba(255,255,255,.65)'};text-decoration:none;font-family:Inter,sans-serif;font-size:14px;font-weight:${i.href===active?600:400};border-left:3px solid ${i.href===active?'#D93A3A':'transparent'};background:${i.href===active?'rgba(217,58,58,.06)':'none'}"><span style="font-size:20px">${i.icon}</span> ${i.label}</a>`).join('');
 }
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
 </html>
